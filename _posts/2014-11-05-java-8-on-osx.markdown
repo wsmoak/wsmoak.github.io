@@ -2,7 +2,7 @@
 layout: post
 title:  "Java 8 on OS X"
 date:   2014-11-05 10:30:00
-categories: osx java
+tags: osx java
 ---
 This morning I decided to upgrade to the Macbook to the latest and greatest Java version from Oracle.
 
