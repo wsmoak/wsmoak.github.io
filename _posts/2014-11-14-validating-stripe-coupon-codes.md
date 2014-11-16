@@ -29,14 +29,16 @@ Ideally, we'd like to check that the coupon code is valid and give the customer 
 Here is a bit of JavaScript/jQuery to do that.  It communicates with a PHP page that simply responds with true or false.
 
 {% highlight javascript %}
+<script type="text/javascript" src="jquery-1.11.1.js"></script>
+
 <script>
 $(document).ready(function(){
   $('#coupon').change(function(){
-    postData = "coupon_id="+$('#coupon').val();
+    requestData = "coupon_id="+$('#coupon').val();
     $.ajax({
-      type: "POST",
+      type: "GET",
       url: "validate-coupon.php",
-      data: postData,
+      data: requestData,
       success: function(response){
         if (response) {
           $('#msg').html("Valid Code!")
