@@ -108,11 +108,13 @@ In the activity, (which reads in reverse chronological order,) you can see exact
 
 ![Subscription Activity](/images/2015/01/26/subscription-activity.png "Subscription Activity")
 
-The payment processed successfully, the subscription was created, the statmement settled, and then the billing date was changed.
+The payment processed successfully, the subscription was created, the statement settled, and then the billing date was changed.
 
 ### Summary
 
-With very little work we've been able to customize a [Chargify][chargify] site to match the business requirements of a club membership. If you'd like to discuss using [Chargify][chargify] for your own subscription-based business, head over to the [Support Site](https://chargify.zendesk.com/hc/en-us) or [Twitter](https://twitter.com/chargify) and ask!
+With very little work we've been able to customize a [Chargify][chargify] site to match the business requirements of a club membership. I've left out some details to prevent this turning into a novel, so if something doesn't make sense, leave a comment below or drop me an email at <wsmoak@gmail.com>, and I'll try to clear it up.
+
+If you'd like to discuss using [Chargify][chargify] for your own subscription-based business, head over to the [Support Site](https://chargify.zendesk.com/hc/en-us) or [Twitter](https://twitter.com/chargify) and ask!
 
 ### References
 
