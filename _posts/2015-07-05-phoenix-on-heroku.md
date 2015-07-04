@@ -196,9 +196,3 @@ The code for this example is available at <https://github.com/wsmoak/hello_phoen
 [phoenix-static-buildpack]: https://github.com/gjaldon/heroku-buildpack-phoenix-static
 [elixir-buildpack]: https://github.com/HashNuke/heroku-buildpack-elixir
 [sessions]: http://www.phoenixframework.org/v0.14.0/docs/sessions
-
-### Future Topics
-
-* In setting the buildpacks, we are apparently pointing at master of someone else's github repo.  We should fork the repos for the buildpacks, point to code under our own control, and only pull in changes that we've reviewed.
-* How do you version and release a Phoenix (or Elixir) project?
-* How do you set this up to deploy as staging instead of prod?  The existing config files are for dev, test and prod.
