@@ -13,7 +13,7 @@ I was happy to find what looked like a complete set of instructions...
 
 ... but apparently that blog post is outdated.  It *is* over six months old. :) Let's start over.
 
-You will need at _least_ Elixir, Phoenix, NodeJS and the Heroku Toolbelt installed.
+You will need at _least_ Elixir, Phoenix, NodeJS and the Heroku Toolbelt installed.  Also git, and... the list is long.  If something doesn't work, ask on #elixir-lang or in the comments below, or email me and I'll try to help.
 
 ### Step 1: Create a sample app and get it under version control
 
