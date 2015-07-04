@@ -15,6 +15,8 @@ I was happy to find what looked like a complete set of instructions...
 
 You will need at _least_ Elixir, Phoenix, NodeJS and the Heroku Toolbelt installed.  Also git, and... the list is long.  If something doesn't work, ask on #elixir-lang or in the comments below, or email me and I'll try to help.
 
+Note: This works (or it did in early July 2015) with Elixir 1.0.4 and Phoenix 0.14.  If you're reading this in the future and it _doesn't_ work, let me know so I can update the post or point readers to a better article.
+
 ### Step 1: Create a sample app and get it under version control
 
 <pre>
