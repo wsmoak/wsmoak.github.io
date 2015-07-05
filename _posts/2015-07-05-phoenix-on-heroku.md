@@ -151,17 +151,16 @@ Screen shot for posterity, since an unused app won't stay running for long on He
 
 ### Further Configuration
 
-However at some point you *are* going to need a database, so here is a bit of info on setting environment variables and exporting them in Heroku:
+At some point you *are* going to need a database, so here is a bit of info on setting environment variables and exporting them in Heroku:
 
 <pre>
 $ heroku config:set SECRET_KEY_BASE=[long.string.of.chars]
-$ heroku config:set DATABASE_USERNAME=[your.database.username]
-$ heroku config:set DATABASE_PASSWORD=[your.database.password]
+$ heroku config:set SOME_VAR=[the.value]
 </pre>
 
 See <https://devcenter.heroku.com/articles/config-vars> for more information on configuration variables in Heroku.
 
-Edit (create if necessary) either `elixir_buildpack.config` or `phoenix_static_buildpack.config` in the root of your app and specify the environment variables to be exported.
+Edit (create if necessary) `elixir_buildpack.config` in the root of your app and specify the environment variables to be exported.
 
 Note that a line with a matching key will *override* the one from the buildpack, so make sure to include any existing values, such as DATABASE_URL.  You can see the default config files for the two buildpacks at
 
@@ -170,16 +169,16 @@ Note that a line with a matching key will *override* the one from the buildpack,
 
 My elixir_buildpack.config file now contains:
 <pre>
-config_vars_to_export=(DATABASE_URL SECRET_KEY_BASE DATABASE_USERNAME DATABASE_PASSWORD)
+config_vars_to_export=(DATABASE_URL SECRET_KEY_BASE)
 </pre>
 
-This doesn't actually add a database to the Heroku environment, but we'll leave that for a future (or someone else's) post.
+We haven't actually added a database to the Heroku environment yet, but we'll leave that for a future (or someone else's) post.
 
 Note: secret_key_base is not database related, it's for cookie session storage. See the [Sessions][sessions] Guide for more info.
 
-Thanks to ericmj, HashNuke, and chrismccord in #elixir-lang on freenode as well as gjaldon for the buildpack.
+Thanks to ericmj, HashNuke, chrismccord, and gjaldon in #elixir-lang on freenode.
 
-The code for this example is available at <https://github.com/wsmoak/hello_phoenix_heroku>
+The code for this example is available at <https://github.com/wsmoak/hello_phoenix_heroku/tree/20150705>
 
 ### References
 * [Elixir][elixir]
