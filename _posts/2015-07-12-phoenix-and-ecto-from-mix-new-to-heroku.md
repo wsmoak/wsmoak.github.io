@@ -9,7 +9,21 @@ In [Deploying a Phoenix app to Heroku](...) we looked at the absolute minimum ne
 
 Now let's start over and deploy a more realistic app, one that actually uses a database, so we can make sure it really works.
 
-### Step 1: Create a sample app and get it under version control
+### Step 0: Prerequisites
+
+Before you can begin, you need several things installed.  These include but may not be limited to: Erlang, Elixir, Postgres, NodeJS, Heroku Toolbelt, Phoenix, and Git.
+
+Here are some links to get you started:
+
+* <http://elixir-lang.org/install.html>
+* <http://www.phoenixframework.org/docs/installation>
+* <https://toolbelt.heroku.com>
+
+If you have *any* problems at all, ask in #elixir-lang on Freenode IRC, in the Phoenix channel in Slack, phoenix-talk Google Group. If you don't know how to find or use those, ask below in the comments or send me an email, and I'll help you find the right place.
+
+Now, let's begin.
+
+### Step 1: Create a sample app and put it under version control
 
 The first steps are the same, create a new Phoenix app and get it under version control:
 
@@ -25,7 +39,7 @@ Now if anything goes wrong, we can back up to this point.
 
 The next thing to do is to choose a license for your project.  If your project has a chance of ever getting out in public, for example if you are going to put it on GitHub, it's important to include a license so that someone coming upon it later understands what your intentions are and what they are allowed to do with your code.
 
-I've been involved with The Apache Software Foundation for years and years, and I prefer the Apache License.  Many projects (and Phoenix itself) use the MIT License.  GitHub has an excellent article on how to choose a license and why you should do so.
+I've been involved with The Apache Software Foundation for years and years, and I prefer the Apache License.  Many projects (and Phoenix itself) use the MIT License.  GitHub has an excellent [Choose A License](http://choosealicense.com) tool to help you decide.
 
 Enough of my soapbox. If you're going to, add your LICENSE file and commit it.
 
@@ -38,7 +52,7 @@ $ git add LICENSE && git commit -m "Add Apache License 2.0"
 
 ### Step 3: Add a Users model
 
-Let's add a simple model for a User by following part of the [Ecto Models](http://www.phoenixframework.org/docs/ecto-models) guide.
+Let's add a simple model for a User by following part of the [Ecto Models][ecto-models] guide.
 
 <pre>
 $ mix phoenix.gen.html User users name:string email:string
@@ -63,11 +77,11 @@ Open `web/router.ex` and paste that line in:
   end
 </pre>
 
-(Remember to commit your changes.  I'll stop reminding you after this.)
+(Remember to `git commit` your changes.)
 
 ### Step 4: Test locally
 
-Now create the development database and run the migration.  (The [Ecto Models] guide has all the details on this.)
+Now create the development database and run the migration.  (The [Ecto Models][ecto-models] guide has all the details on this.)
 
 <pre>
 $ mix ecto.create
@@ -76,7 +90,7 @@ $ mix ecto.migrate
 
 If you received errors here, check that Postgres is running locally.
 
-At this point you can start the app locally with `mix phoenix.server`, visit the <http://localhost:4000/users> page, and check that adding, editing and deleting users works.
+At this point you can start the app with `mix phoenix.server`, visit the <http://localhost:4000/users> page, and check that adding, editing and deleting users works in the development environment.
 
 ### Step 4: Modify prod configuration
 
@@ -93,15 +107,19 @@ Instead, add the following to `prod.exs` (copied and modified from `config/prod.
 
 <pre>
 # Configure secret_key_base for cookie-based session storage
-  config :my_app_414711, MyApp_414711.Endpoint,
+  config :my_app, MyApp.Endpoint,
   secret_key_base: System.get_env("SECRET_KEY_BASE")
 
 # Configure your database
-  config :my_app_414711, MyApp_414711.Repo,
+  config :my_app, MyApp.Repo,
   adapter: Ecto.Adapters.Postgres,
   url: System.get_env("DATABASE_URL"),
   size: 20 # The amount of database connections in the pool
 </pre>
+
+This tells Phoenix to get the DATABASE_URL and SECRET_KEY_BASE values from the environment, so that we don't have to include passwords and keys in plain text in our source code.  We'll set those values a bit later.
+
+(Remember to `git commit` your changes.)
 
 ### Step 3: Create the Heroku application
 
@@ -109,14 +127,25 @@ Instead, add the following to `prod.exs` (copied and modified from `config/prod.
 $ heroku create
 </pre>
 
-A newly created Heroku application does not know anything about the language and frameworks used by the app. [Buildpacks][buildpacks] are used for this configuration. Add the Elixir buildpack first, followed by the Phoenix Static buildpack.
+Self explanatory. :)  If this does not work, check that you have the Heroku Toolbelt installed.
+
+### Step 5: Add Heroku buildpacks
+
+A newly created Heroku application does not know anything about the language and frameworks used by the app. [Buildpacks][buildpacks] are used for this configuration, and have been provided by the community.
+
+Add the Elixir buildpack first, followed by the Phoenix Static buildpack.
 
 <pre>
 $ heroku buildpacks:add https://github.com/HashNuke/heroku-buildpack-elixir
 $ heroku buildpacks:add https://github.com/gjaldon/phoenix-static-buildpack
 </pre>
 
-Now add the PostgreSQL database to the Heroku project:
+Note: If heroku complains that `buildpacks` is not a recognized command, and you _happen_ to be a Ruby developer who uses `rbenv`, then see if [this](http://wiki.wsmoak.net/cgi-bin/wiki.pl?HerokuRbenv) helps.
+
+
+### Step # Add PostgreSQL to the Heroku app
+
+Now add the PostgreSQL database to the Heroku application:
 
 <pre>
 $ heroku addons:create heroku-postgresql
@@ -124,19 +153,25 @@ $ heroku addons:create heroku-postgresql
 
 This will make the database available, but it will be empty.  We'll create the database tables and columns shortly.
 
-Set the SECRET_KEY_BASE environment variable, which is used for cookie-based session storage.  See the Sessions doc for more information.
+### Step #: Set environment variables
+
+Set the SECRET_KEY_BASE environment variable, which is used for cookie-based [session][sessions] storage.
 
 <pre>
-$ heroku config:set SECRET_KEY_BASE=[long random string copied from config/prod.secret.exs]
+$ heroku config:set SECRET_KEY_BASE=[copied from config/prod.secret.exs]
 </pre>
 
-At this point we need to push our changes to Heroku so that it will build the app and get the environment set up.
+### Step #: Push changes to Heroku
+
+At this point we need to push our changes to Heroku so that it will get the environment set up and build the app.
 
 <pre>
 $ git push heroku master
 </pre>
 
-Now that Erlang and Elixir are installed, you can create the database and run the migration:
+### Step #: Create and migrate the database
+
+Now that Elixir is installed, you have access to the `mix` command which is needed to run the following commands to create and migrate the database.
 
 <pre>
 $ heroku run mix ecto.create # ignore error, see below
@@ -146,19 +181,34 @@ $ heroku run mix ecto.migrate
 When running `heroku run mix ecto.create` I received this error:
 <pre>
 Running `mix ecto.create` attached to terminal... up, run.4650
-** (Mix) The database for MyApp_1018711.Repo couldn't be created,
+** (Mix) The database for MyApp.Repo couldn't be created,
 reason given: Error: You must install at least one postgresql-client-[version] package.
 </pre>
 
-According to <http://stackoverflow.com/questions/17300341/migrate-not-working-on-heroku> and in my experience, this can safely be ignored
+According to <http://stackoverflow.com/questions/17300341/migrate-not-working-on-heroku> and in my experience, this can safely be ignored.
+
+# Step 3: Success!
 
 And finally:
 <pre>
 $ heroku open
 </pre>
 
-Should open the index page of your app.  Add /users to the url and see it work!
+This should open the index page of your app.  Add `/users` to the url and see it work, for example: <https://powerful-depths-1590.herokuapp.com/users> .
+
+![Hello Phoenix with Users on Heroku](/images/2015/07/hello-phoenix-users-heroku.png)
 
 ### References
 
 * [WIP Heroku deployment guide](https://github.com/phoenixframework/phoenix_guides/pull/314)
+* [Ecto Models][ecto-models]
+* [Heroku Buildpacks][buildpacks]
+* [Elixir Buildpack][elixir-buildpack]
+* [Phoenix Static Buildpack][phoenix-static-buildpack]
+* [Phoenix Sessions][sessions]
+
+[ecto-models]: http://www.phoenixframework.org/docs/ecto-models
+[sessions]: http://www.phoenixframework.org/docs/sessions
+[buildpacks]: https://devcenter.heroku.com/articles/buildpacks
+[phoenix-static-buildpack]: https://github.com/gjaldon/heroku-buildpack-phoenix-static
+[elixir-buildpack]: https://github.com/HashNuke/heroku-buildpack-elixir
