@@ -23,6 +23,16 @@ If you have *any* problems at all, ask in #elixir-lang on Freenode IRC, in the P
 
 Now, let's begin.
 
+### Step 0.5: Install the latest hex
+
+One thing first! There was a bug in hex (the package manager) that was fixed Sunday morning 7/12, however depending on what you have downloaded recently, you may have the bad version.  Execute this command to [install hex locally](http://elixir-lang.org/docs/v1.0/mix/):
+
+<pre>
+$ mix local.hex
+</pre>
+
+Now we can get started.
+
 ### Step 1: Create a sample app and put it under version control
 
 The first steps are the same, create a new Phoenix app and get it under version control:
@@ -78,6 +88,8 @@ Open `web/router.ex` and paste that line in:
 </pre>
 
 (Remember to `git commit` your changes.)
+
+NOTE:  If you run into an `Unchecked dependencies` error at this point, see the [Troubleshooting](#troubleshooting) section below.
 
 ### Step 4: Test locally
 
@@ -206,6 +218,45 @@ This should open the index page of your app.  Add `/users` to the url and see it
 * [Elixir Buildpack][elixir-buildpack]
 * [Phoenix Static Buildpack][phoenix-static-buildpack]
 * [Phoenix Sessions][sessions]
+
+### Troubleshooting
+
+If you see this error after generating the model...
+<pre>
+Generated phoenix_ecto app
+==> my_app
+Unchecked dependencies for environment dev:
+* postgrex (Hex package)
+  the dependency postgrex defined
+
+  > In mix.exs:
+    {:postgrex, ">= 0.0.0", [hex: :postgrex]}
+
+  does not match the requirement specified
+
+  > In deps/ecto/mix.exs:
+    {:postgrex, "~> 0.8.3", [optional: true, hex: :postgrex]}
+
+  Ensure they match or specify one of the above in your MyApp_323712.Mixfile deps and set `override: true`
+** (Mix) Can't continue due to errors on dependencies
+</pre>
+
+... it is due to:
+
+3:31 PM [ericmj] there was a bug in hex that has been fixed<br/>
+3:32 PM [ericmj] if you update hex it is fine, but if you fetched deps with the broken hex you may have a locked postgrex 0.9.0 which you dont want
+
+The `mix local.hex` command we ran earlier *should* have prevented this, but if not, execute these commands to install the latest one again and [unlock](http://elixir-lang.org/docs/v1.0/mix/Mix.Tasks.Deps.Unlock.html) the postgrex dependency:
+
+<pre>
+$ mix local.hex
+$ mix deps.unlock
+$ mix deps.unlock postgrex
+$ mix deps.get
+</pre>
+
+[Go back to Step 3](#step-3-add-a-users-model)
+
 
 [ecto-models]: http://www.phoenixframework.org/docs/ecto-models
 [sessions]: http://www.phoenixframework.org/docs/sessions
