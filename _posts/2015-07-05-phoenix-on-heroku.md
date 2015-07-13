@@ -5,6 +5,8 @@ date:   2015-07-05 14:41:00
 tags: elixir phoenix heroku
 ---
 
+<b>UPDATE!  Check out a newer version of this HOWTO at [Phoenix and Ecto: From mix new to Heroku](http://wsmoak.net/2015/07/12/phoenix-and-ecto-from-mix-new-to-heroku.html)</b>
+
 Having (finally) gotten the [Phoenix Framework][phoenix] for [Elixir] installed (/me *stares accusingly at Norton Firewall*) and played with the Hello Phoenix app a bit locally, I decided to deploy it to Heroku.
 
 I was happy to find what looked like a complete set of instructions...
