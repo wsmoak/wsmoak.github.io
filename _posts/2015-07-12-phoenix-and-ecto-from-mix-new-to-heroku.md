@@ -5,7 +5,7 @@ date:   2015-07-12 14:49:00
 tags: elixir phoenix ecto heroku
 ---
 
-In [Deploying a Phoenix app to Heroku](...) we looked at the absolute minimum necessary to get the Hello Phoenix app running on Heroku.  This involved modifying config files and adding some environment variables.
+In [Deploying a Phoenix app to Heroku](http://wsmoak.net/2015/07/05/phoenix-on-heroku.html) we looked at the absolute minimum necessary to get the Hello Phoenix app running on Heroku.  This involved modifying config files and adding some environment variables.
 
 Now let's start over and deploy a _slightly_ more realistic app, one that actually uses a database, so we can make sure everything works.  We'll be using Postgres and [Ecto][ecto] which is Elixir's DSL for interacting with databases.
 
