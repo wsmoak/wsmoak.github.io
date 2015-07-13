@@ -7,7 +7,7 @@ tags: elixir phoenix ecto heroku
 
 In [Deploying a Phoenix app to Heroku](...) we looked at the absolute minimum necessary to get the Hello Phoenix app running on Heroku.  This involved modifying config files and adding some environment variables.
 
-Now let's start over and deploy a more realistic app, one that actually uses a database, so we can make sure it really works.
+Now let's start over and deploy a _slightly_ more realistic app, one that actually uses a database, so we can make sure everything works.  We'll be using Postgres and [Ecto][ecto] which is Elixir's DSL for interacting with databases.
 
 ### Step 0: Prerequisites
 
@@ -25,7 +25,7 @@ Now, let's begin.
 
 ### Step 0.5: Install the latest hex
 
-One thing first! There was a bug in hex (the package manager) that was fixed Sunday morning 7/12, however depending on what you have downloaded recently, you may have the bad version.  Execute this command to [install hex locally](http://elixir-lang.org/docs/v1.0/mix/):
+One thing first! There was a bug in hex (the package manager) that was [fixed][hex-bugfix] Sunday morning 7/12, however depending on what you have downloaded recently, you may have the bad version.  Execute this command to [install hex locally](http://elixir-lang.org/docs/v1.0/mix/):
 
 <pre>
 $ mix local.hex
@@ -221,7 +221,7 @@ This should open the index page of your app.  Add `/users` to the url and see it
 
 ### Troubleshooting
 
-If you see this error after generating the model...
+If you see this error when trying to generate the model in Step 3...
 <pre>
 Generated phoenix_ecto app
 ==> my_app
@@ -237,13 +237,13 @@ Unchecked dependencies for environment dev:
   > In deps/ecto/mix.exs:
     {:postgrex, "~> 0.8.3", [optional: true, hex: :postgrex]}
 
-  Ensure they match or specify one of the above in your MyApp_323712.Mixfile deps and set `override: true`
+  Ensure they match or specify one of the above in your MyApp.Mixfile deps and set `override: true`
 ** (Mix) Can't continue due to errors on dependencies
 </pre>
 
 ... it is due to:
 
-3:31 PM [ericmj] there was a bug in hex that has been fixed<br/>
+3:31 PM [ericmj] there was a bug in hex that has been [fixed][hex-bugfix]<br/>
 3:32 PM [ericmj] if you update hex it is fine, but if you fetched deps with the broken hex you may have a locked postgrex 0.9.0 which you dont want
 
 The `mix local.hex` command we ran earlier *should* have prevented this, but if not, execute these commands to install the latest one again and [unlock](http://elixir-lang.org/docs/v1.0/mix/Mix.Tasks.Deps.Unlock.html) the postgrex dependency:
@@ -263,3 +263,5 @@ $ mix deps.get
 [buildpacks]: https://devcenter.heroku.com/articles/buildpacks
 [phoenix-static-buildpack]: https://github.com/gjaldon/heroku-buildpack-phoenix-static
 [elixir-buildpack]: https://github.com/HashNuke/heroku-buildpack-elixir
+[hex-bugfix]: https://github.com/hexpm/hex/commit/bab7f2fb2cdc22984ab4ad1f985546c0ce8ac621
+[ecto]: https://github.com/elixir-lang/ecto
