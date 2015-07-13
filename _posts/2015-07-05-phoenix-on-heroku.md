@@ -9,7 +9,7 @@ Having (finally) gotten the [Phoenix Framework][phoenix] for [Elixir] installed 
 
 I was happy to find what looked like a complete set of instructions...
 
-* <http://learnelixir.com/blog/2014/10/15/deploy-phonenix-application-to-heroku-server/>
+* http://learnelixir.com/blog/2014/10/15/deploy-phonenix-application-to-heroku-server/
 
 ... but apparently that blog post is outdated.  It *is* over six months old. :) Let's start over.
 
@@ -187,7 +187,6 @@ The code for this example is available at <https://github.com/wsmoak/hello_phoen
 * [Elixir Buildpack][elixir-buildpack]
 * [Phoenix Static Buildpack][phoenix-static-buildpack]
 * [Heroku Using Multiple Buildpacks][using-multiple-buildpacks]
-* <http://learnelixir.com/blog/2014/10/15/deploy-phonenix-application-to-heroku-server/>
 * <http://maxwellholder.com/blog/build-a-blog-with-phoenix-and-ember>
 
 [elixir]: http://elixir-lang.org
