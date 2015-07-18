@@ -9,6 +9,8 @@ In [Deploying a Phoenix app to Heroku](http://wsmoak.net/2015/07/05/phoenix-on-h
 
 Now let's start over and deploy a _slightly_ more realistic app, one that actually uses a database, so we can make sure everything works.  We'll be using Postgres and [Ecto][ecto] which is Elixir's DSL for interacting with databases.
 
+Note: This worked in mid-July 2015 with Elixir 1.0.4 and Phoenix 0.14.0. If it stops working at some point in the future, please let me know so I can update it or point readers to a more up-to-date resource!
+
 ### Step 0: Prerequisites
 
 Before you can begin, you need several things installed.  These include but may not be limited to: Erlang, Elixir, Postgres, NodeJS, Heroku Toolbelt, Phoenix, and Git.
@@ -19,7 +21,7 @@ Here are some links to get you started:
 * <http://www.phoenixframework.org/docs/installation>
 * <https://toolbelt.heroku.com>
 
-If you have *any* problems at all, ask in #elixir-lang on Freenode IRC, in the Phoenix channel in Slack, phoenix-talk Google Group. If you don't know how to find or use those, ask below in the comments or send me an email, and I'll help you find the right place.
+If you have *any* problems at all, ask in #elixir-lang on Freenode IRC, in the Phoenix channel in Slack, or on the phoenix-talk Google Group. If you don't know how to find or use those, ask below in the comments or send me an email, and I'll help you find the right place.
 
 Now, let's begin.
 
@@ -39,6 +41,9 @@ The first steps are the same, create a new Phoenix app and get it under version 
 
 <pre>
 $ mix phoenix.new my_app
+...
+Fetch and install dependencies? [Yn] Y
+...
 $ cd my_app
 $ git init && git add . && git commit -m "Initial commit of Phoenix app"
 </pre>
@@ -87,20 +92,21 @@ Open `web/router.ex` and paste that line in:
   end
 </pre>
 
-(Remember to `git commit` your changes.)
+Remember to `git commit` your changes:
+<pre>
+$ git add . && git commit -m "Add Users resource to browser scope"
+</pre>
 
 NOTE:  If you run into an `Unchecked dependencies` error at this point, see the [Troubleshooting](#troubleshooting) section below.
 
 ### Step 4: Test locally
 
-Now create the development database and run the migration.  (The [Ecto Models][ecto-models] guide has all the details on this.)
+Provided you have Postgres installed and running locally, you can create the development database and run the migration.  (The [Ecto Models][ecto-models] guide has all the details on this.)
 
 <pre>
 $ mix ecto.create
 $ mix ecto.migrate
 </pre>
-
-If you received errors here, check that Postgres is running locally.
 
 At this point you can start the app with `mix phoenix.server`, visit the <http://localhost:4000/users> page, and check that adding, editing and deleting users works in the development environment.
 
@@ -131,7 +137,12 @@ Instead, add the following to `prod.exs` (copied and modified from `config/prod.
 
 This tells Phoenix to get the DATABASE_URL and SECRET_KEY_BASE values from the environment, so that we don't have to include passwords and keys in plain text in our source code.  We'll set those values a bit later.
 
-(Remember to `git commit` your changes.)
+Note:  If your app is not named _exactly_ `my_app` then you will need to modify the `config` lines above to match.
+
+Remember to `git commit` your changes:
+<pre>
+$ git add . && git commit -m "Update production configuration"
+</pre>
 
 ### Step 6: Create the Heroku application
 
@@ -139,7 +150,17 @@ This tells Phoenix to get the DATABASE_URL and SECRET_KEY_BASE values from the e
 $ heroku create
 </pre>
 
-Self explanatory. :)  If this does not work, check that you have the Heroku Toolbelt installed.
+You should see something like this:
+
+<pre>
+Creating powerful-depths-1590... done, stack is cedar-14
+https://powerful-depths-1590.herokuapp.com/ | https://git.heroku.com/powerful-depths-1590.git
+Git remote heroku added
+</pre>
+
+If this does not work, check that you have the Heroku Toolbelt installed.
+
+(If you're curious about what just happened, execute `git remote -v` to see the 'remotes' that were added to your local git repo.)
 
 ### Step 7: Add Heroku buildpacks
 
@@ -186,18 +207,26 @@ $ git push heroku master
 Now that Elixir is installed, you have access to the `mix` command which is needed to run the following commands to create and migrate the database.
 
 <pre>
-$ heroku run mix ecto.create # ignore error, see below
-$ heroku run mix ecto.migrate
+$ heroku run mix ecto.create
+Running `mix ecto.create` attached to terminal... up, run.4208
+** (Mix) The database for MyApp.Repo couldn't be created, reason given: Error: You must install at least one postgresql-client-[version] package.
+.
 </pre>
 
-When running `heroku run mix ecto.create` I received this error:
+Oops! This command results in an angry red error message.  Fear not. According to <http://stackoverflow.com/questions/17300341/migrate-not-working-on-heroku> and in my experience, this can safely be ignored.
+
 <pre>
-Running `mix ecto.create` attached to terminal... up, run.4650
-** (Mix) The database for MyApp.Repo couldn't be created,
-reason given: Error: You must install at least one postgresql-client-[version] package.
+$ heroku run mix ecto.migrate
+Running `mix ecto.migrate` attached to terminal... up, run.5618
+
+15:51:38.879 [info]  == Running MyApp.Repo.Migrations.CreateUser.change/0 forward
+
+15:51:38.879 [info]  create table users
+
+15:51:38.932 [info]  == Migrated in 0.4s
 </pre>
 
-According to <http://stackoverflow.com/questions/17300341/migrate-not-working-on-heroku> and in my experience, this can safely be ignored.
+Now the 'users' database table has been created.
 
 # Step 12: Success!
 
