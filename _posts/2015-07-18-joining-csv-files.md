@@ -121,6 +121,8 @@ This is only a small part of what [csvkit][csvkit] can do.  The next thing I'd e
 
 Have fun!
 
+Copyright 2015 Wendy Smoak - This post first appeared on [{{ site.url }}][site.url] and is licensed [CC BY-NC][cc-by-nc].
+
 ## References
 
 * [csvkit][csvkit]
@@ -129,8 +131,6 @@ Have fun!
 * [csvgrep][csvgrep]
 * [csvstat][csvstat] and the [tutorial][tutorial]
 * [Chargify][chargify]
-
-Copyright 2015 Wendy Smoak - This post first appeared on [{{ site.url }}][site.url] and is licensed [CC BY-NC][cc-by-nc].
 
 [chargify]: https://www.chargify.com
 [chargify-signup]: https://app.chargify.com/signup/developer3

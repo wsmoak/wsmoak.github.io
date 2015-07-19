@@ -239,6 +239,8 @@ This should open the index page of your app.  Add `/users` to the url and see it
 
 ![Hello Phoenix with Users on Heroku](/images/2015/07/hello-phoenix-users-heroku.png)
 
+Copyright 2015 Wendy Smoak - This post first appeared on [{{ site.url }}][site-url] and is licensed [CC BY-NC][cc-by-nc].
+
 ### References
 
 * [WIP Heroku deployment guide](https://github.com/phoenixframework/phoenix_guides/pull/314)
@@ -294,3 +296,5 @@ $ mix deps.get
 [elixir-buildpack]: https://github.com/HashNuke/heroku-buildpack-elixir
 [hex-bugfix]: https://github.com/hexpm/hex/commit/bab7f2fb2cdc22984ab4ad1f985546c0ce8ac621
 [ecto]: https://github.com/elixir-lang/ecto
+[cc-by-nc]:  http://creativecommons.org/licenses/by-nc/3.0/
+[site-url]: {{ site.url }}

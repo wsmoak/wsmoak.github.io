@@ -5,9 +5,9 @@ date:   2015-07-05 14:41:00
 tags: elixir phoenix heroku
 ---
 
-<b>UPDATE!  Check out a newer version of this HOWTO at [Phoenix and Ecto: From mix new to Heroku](http://wsmoak.net/2015/07/12/phoenix-and-ecto-from-mix-new-to-heroku.html)</b>
-
 Having (finally) gotten the [Phoenix Framework][phoenix] for [Elixir] installed (/me *stares accusingly at Norton Firewall*) and played with the Hello Phoenix app a bit locally, I decided to deploy it to Heroku.
+
+<b>UPDATE!  Check out a newer version of this HOWTO at [Phoenix and Ecto: From mix new to Heroku](http://wsmoak.net/2015/07/12/phoenix-and-ecto-from-mix-new-to-heroku.html)</b>
 
 I was happy to find what looked like a complete set of instructions...
 
@@ -182,6 +182,8 @@ Thanks to ericmj, HashNuke, chrismccord, and gjaldon in #elixir-lang on freenode
 
 The code for this example is available at <https://github.com/wsmoak/hello_phoenix_heroku/tree/20150705>
 
+Copyright 2015 Wendy Smoak - This post first appeared on [{{ site.url }}][site-url] and is licensed [CC BY-NC][cc-by-nc].
+
 ### References
 * [Elixir][elixir]
 * [Phoenix Framework][phoenix]
@@ -198,3 +200,5 @@ The code for this example is available at <https://github.com/wsmoak/hello_phoen
 [phoenix-static-buildpack]: https://github.com/gjaldon/heroku-buildpack-phoenix-static
 [elixir-buildpack]: https://github.com/HashNuke/heroku-buildpack-elixir
 [sessions]: http://www.phoenixframework.org/v0.14.0/docs/sessions
+[cc-by-nc]:  http://creativecommons.org/licenses/by-nc/3.0/
+[site-url]: {{ site.url }}
