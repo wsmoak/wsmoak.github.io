@@ -8,6 +8,8 @@ layout: default
 {% endfor %}
 </ul>
 
+<p class="rss-subscribe">subscribe to the <a href="{{ site.baseurl }}/tag/{{ page.tag }}.xml">{{page.tag}} tag via RSS</a></p>
+
 <div id="tag-cloud">
   {{ site | tag_cloud }}
 </div>
