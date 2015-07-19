@@ -15,3 +15,5 @@ tag_page_dir: tag
 
 tag_feed_layout: tag_feed
 tag_feed_dir: tag
+
+highlighter: pygments
