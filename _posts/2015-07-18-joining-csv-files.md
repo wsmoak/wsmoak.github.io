@@ -130,6 +130,8 @@ Have fun!
 * [csvstat][csvstat] and the [tutorial][tutorial]
 * [Chargify][chargify]
 
+Copyright 2015 Wendy Smoak - This post first appeared on [{{ site.url }}][site.url] and is licensed [CC BY-NC][cc-by-nc].
+
 [chargify]: https://www.chargify.com
 [chargify-signup]: https://app.chargify.com/signup/developer3
 [csvkit]: https://csvkit.readthedocs.org/en/0.9.1/index.html
@@ -138,3 +140,5 @@ Have fun!
 [csvgrep]: http://csvkit.readthedocs.org/en/latest/scripts/csvgrep.html
 [csvstat]: http://csvkit.readthedocs.org/en/latest/scripts/csvstat.html
 [tutorial]: https://csvkit.readthedocs.org/en/0.9.1/tutorial/2_examining_the_data.html
+[cc-by-nc]:  http://creativecommons.org/licenses/by-nc/3.0/
+[site.url]: {{ site.url }}
