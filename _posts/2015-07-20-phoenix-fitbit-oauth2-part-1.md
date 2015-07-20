@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Connecting Phoenix to Fitbit with OAuth2"
-date:   2015-07-19 14:37:00
+date:   2015-07-20 8:04:00
 tags: elixir phoenix oauth2
 ---
 
