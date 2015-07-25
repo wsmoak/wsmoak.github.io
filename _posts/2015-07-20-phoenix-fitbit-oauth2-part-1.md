@@ -281,6 +281,8 @@ We'll stop there for now. In Part 2, we'll learn how to
 
 The code for this example is available at <https://github.com/wsmoak/my_app_7191136/tree/20150720>
 
+Copyright 2015 Wendy Smoak - This post first appeared on [{{ site.url }}][site-url] and is licensed [CC BY-NC][cc-by-nc].
+
 ## References
 
 * [Phoenix and Ecto: From mix new to Heroku][prev-blog]
@@ -302,3 +304,6 @@ The code for this example is available at <https://github.com/wsmoak/my_app_7191
 [phoenix-mix-tasks]: <http://www.phoenixframework.org/v0.10.0/docs/mix-tasks>
 [fitbit-typo]: https://community.fitbit.com/t5/Web-API/Typo-in-OAuth2-docs/m-p/871896#U871896
 [fitbit-register]: https://dev.fitbit.com/apps/new
+[cc-by-nc]:  http://creativecommons.org/licenses/by-nc/3.0/
+[site-url]: {{ site.url }}
+
