@@ -17,3 +17,5 @@ tag_feed_layout: tag_feed
 tag_feed_dir: tag
 
 highlighter: pygments
+
+port: 3050
