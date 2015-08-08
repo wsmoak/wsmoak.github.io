@@ -279,9 +279,9 @@ We'll stop there for now. In Part 2, we'll learn how to
 * exchange the code we're given for an access token that we can use to make API calls,
 * and to store the access token in our user model.
 
-The code for this example is available at <https://github.com/wsmoak/my_app_7191136/tree/20150720>
+The code for this example is available at <https://github.com/wsmoak/my_app_7191136/tree/20150720> and is MIT licensed.
 
-Copyright 2015 Wendy Smoak - This post first appeared on [{{ site.url }}][site-url] and is licensed [CC BY-NC][cc-by-nc].
+Copyright 2015 Wendy Smoak - This post first appeared on [{{ site.url }}][site-url] and is [CC BY-NC][cc-by-nc] licensed.
 
 ## References
 
