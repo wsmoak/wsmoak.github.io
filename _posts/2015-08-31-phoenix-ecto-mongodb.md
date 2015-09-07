@@ -7,6 +7,8 @@ tags: elixir phoenix ecto mongodb
 
 I saw (on [@ElixirStatus][elixirstatus]) that the [Ecto adapter for MongoDB was released][release], and wanted to try it out.  Looking around, I found that while the adapter itself was in the hex repository, the [PR][pull-1161] that would let the Phoenix installer (the phoenix.new mix task) know about mongodb had not yet been merged.  Let's see how to try out someone else's [as-yet-unmerged changes][branch]!
 
+**UPDATE**: As of 2015-09-06 [PR 1161][pull-1161] was merged and this feature is available in Phoenix 1.0.2.  Now `mix phoenix.new my_project --database mongodb` will work with no need to build it yourself.  [Install][install] the latest version and then skip down to [Create A Project](#create-a-project) to try it out. (You'll need to leave off the `--dev` switch.)
+
 **NOTE**: This involves using un-released code on master and a feature branch.  If you're interested in playing on the bleeding edge, follow me!  If not, you may want to wait until this makes its way into a release.
 
 ### Clone A Fork
@@ -186,9 +188,9 @@ This is what I love about MongoDB for development -- I don't have to worry about
 
 We've seen how to try out another contributor's as-yet-unmerged changes and gotten a sneak peek at generating a Phoenix project with support for MongoDB.
 
-My branch with the latest (as of 8/30) Phoenix code plus Michał's changes is here:  <https://github.com/wsmoak/phoenix/tree/mongodb_installer>.
+My branch with the latest (as of 8/30) Phoenix code plus Michał's changes is here:  <https://github.com/wsmoak/phoenix/tree/mongodb_installer>.  A tag with the branch contents as of this post is here: <https://github.com/wsmoak/phoenix/tree/20150830>
 
-The code for this example is available at <https://github.com/wsmoak/my_app_mongodb/tree/20150831> and is MIT licensed.  (Note that the phoenix dependency uses the previously mentioned branch.)
+The code for this example is available at <https://github.com/wsmoak/my_app_mongodb/tree/20150831> and is MIT licensed.  (Note that the phoenix dependency uses the previously mentioned _branch_, which may have been updated since this was written.)
 
 Copyright 2015 Wendy Smoak - This post first appeared on [{{ site.url }}][site-url] and is [CC BY-NC][cc-by-nc] licensed.
 
@@ -209,3 +211,4 @@ References:
 [syncing-a-fork]: https://help.github.com/articles/syncing-a-fork/
 [cc-by-nc]:  http://creativecommons.org/licenses/by-nc/3.0/
 [site-url]: {{ site.url }}
+[install]: http://www.phoenixframework.org/docs/installation
