@@ -19,19 +19,19 @@ I don't know R, but it looks fairly straightforward from the code and descriptio
 
 Here is the source for a standalone RMarkdown file that executes embedded Elixir code and includes the output of the code in the PDF:
 
-[view source](https://gist.github.com/wsmoak/f5fd090df809e87a13fb)
+[view source][source]
 
-[download source](/images/2015/09/Example.Rmd)
-
-And here is a section of the resulting PDF:
+And here is a section of the [resulting PDF](/images/2015/09/Example.pdf):
 
 ![Executable Elixir With Output](/images/2015/09/elixir-and-output-in-tufte-handout.png)
-
-[download PDF](/images/2015/09/Example.pdf)
 
 I'm sure someone can make this into a proper plugin or engine or whatever the correct term is for RStudio.  (Or they already have and someone will point this out to me in the comments.)
 
 Now I suppose I have to get started on the *content* of the handout that I wanted this for...
+
+Copyright 2015 Wendy Smoak - This post first appeared on [{{ site.url }}][site-url] and is [CC BY-NC][cc-by-nc] licensed.
+
+The source for the example RMarkdown document is available [here][source] and is [CC BY-SA][cc-by-sa] licensed as required by the author of the code it was adapted from.
 
 ### References
 
@@ -43,3 +43,8 @@ Now I suppose I have to get started on the *content* of the handout that I wante
 [go-rmd]: http://www.r-bloggers.com/running-go-language-chunks-in-r-markdown-rmd-files/
 
 [tufte-handout]: http://rmarkdown.rstudio.com/tufte_handout_format.html
+
+[source]: https://gist.github.com/wsmoak/f5fd090df809e87a13fb
+[cc-by-nc]:  http://creativecommons.org/licenses/by-nc/3.0/
+[cc-by-sa]: http://creativecommons.org/licenses/by-sa/4.0/
+[site-url]: {{ site.url }}
