@@ -25,6 +25,8 @@ end
 
 This code will appear on a slide in your presentation, nicely syntax highlighted.
 
+![Highlighted Source Code](/images/2015/09/highlighted-source-code.png)
+
 It's common to use the `data-trim` attribute on the `<code>` element to trim any surrounding whitespace.
 
 <pre>
@@ -92,6 +94,8 @@ end
 If you don't like the yellow background, the CSS can be modified.
 
 And to get the effect Damian describes, you can repeat the same block of code on subsequent slides, each with different parts `<mark>`ed for emphasis.
+
+You may also want to change the slide transitions to fade-in/fade-out when stepping through the source code, so the only thing that appears to move is the code highlights.
 
 Copyright 2015 Wendy Smoak - This post first appeared on [{{ site.url }}][site-url] and is [CC BY-NC][cc-by-nc] licensed.
 
