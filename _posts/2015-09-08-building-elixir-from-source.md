@@ -79,6 +79,8 @@ $ make clean test
 
 If all the dots are green, carry on!
 
+If that didn't work... you may need to install Xcode so that the `make` command will be available. See <https://developer.apple.com/xcode/download/>.
+
 ### Modify Environment
 
 Next I modified my `~/.bash_profile` so that the newly built `elixir` and `iex` scripts would be **first** on my path:
