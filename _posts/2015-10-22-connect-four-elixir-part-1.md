@@ -1,8 +1,8 @@
 ---
 layout: post
 title:  "Connect Four in Elixir (Part 1)"
-date:   2015-10-22 21:59:00
-tags: elixir board-game
+date:   2015-10-22 12:45:00
+tags: elixir game
 ---
 
 After watching the Erlang Solutions [webinar on game logic in Elixir][video] with [Torben Hoffmann][torben] and looking through the [Acquirex][acquirex] code, I thought I would try something similar.  Let's take a look at the [Connect Four][connect-four] game, which involves dropping colored pieces into the top of a 7-column, 6-row vertically suspended grid, and see how it might be done in Elixir.
@@ -45,7 +45,7 @@ $ git commit -m "Initial commit of generated Elixir project with supervision tre
 
 Now what?  I suppose in a perfect world I would write some tests, but at the moment I have no idea what I would be testing.  So let's write some code instead and see what errors we get!
 
-Here's the generated ConnectFour module:
+Here's the generated `ConnectFour` module in `lib/connect_four.ex`:
 
 {% highlight elixir %}
 defmodule ConnectFour do
@@ -68,6 +68,8 @@ defmodule ConnectFour do
   end
 end
 {% endhighlight %}
+
+### Game
 
 It looks like we should define some children.  How about a Game?
 
@@ -163,19 +165,21 @@ iex(1)>
 
 Note that the registered name is displayed in the Observer. This comes from `name: @registered_name` (substituted as `name: Elixir.ConnectFourGame` at compile time).  `ConnectFourGame` is an atom, and uppercase atoms automatically get an `Elixir` prefix.
 
-CTRL-C twice to get out of iex and commit your changes.
+CTRL-C twice to get out of IEx, and commit your changes.
 
 {% highlight bash %}
 $ git add . && git commit -m "Add Game module as GenServer"
 {% endhighlight %}
 
-# The Board Grid
+# Board and Space
 
 The next thing I'd like to do is print the board grid to make it easier to see the players' moves.  Well, that means we need a Board module, and probably some Spaces!
 
 But first, how is this going to work?  Let's say you've started up the project in IEx.  Maybe you'll type `ConnectFour.Game.print_board` and expect to see the 7-by-6 grid.  We'll go with that for now.
 
 Rather than representing the spaces as an array (or list), each space will be a process.  Maybe in the future we'll want to implement "Infinite Connect Four" which is not limited to six rows and seven columns.  In that case, an array might not fit in memory.  So the Board will need to keep track of the Spaces -- that means it needs to be a Supervisor.
+
+Create the files, again following the convention that the modules will be named `ConnectFour.Board` and `ConnectFour.space` and live in the `connect_four` directory as `board.ex` and `space.ex`.
 
 {% highlight bash %}
 $ touch lib/connect_four/board.ex
@@ -184,17 +188,84 @@ $ touch lib/connect_four/space.ex
 
 Now comes a part that I probably would have gotten stuck on without Torben's example.
 
-Here is the Acquirex.Space.Supervisor (our Board): <https://github.com/lehoff/acquirex/blob/master/lib/space_sup.ex>
+Here is the `Acquirex.Space.Supervisor` (equivalent to our `ConnectFour.Board`): <https://github.com/lehoff/acquirex/blob/master/lib/space_sup.ex>
 
-And here is the extended_all function that returns all of the row/column combinations: <https://github.com/lehoff/acquirex/blob/master/lib/tiles.ex#L19>
+And here is the `extended_all` function that returns all of the row/column combinations: <https://github.com/lehoff/acquirex/blob/master/lib/tiles.ex#L19>
 
-Curious about that question mark?  It returns the code point's value for the character that follows.  See <http://stackoverflow.com/questions/26995608/what-does-do-in-elixir> and <http://elixir-lang.org/getting-started/binaries-strings-and-char-lists.html#utf-8-and-unicode>.
+Curious about that question mark in `extended_all`?  It returns the code point's value for the character that follows.  See <http://stackoverflow.com/questions/26995608/what-does-do-in-elixir> and <http://elixir-lang.org/getting-started/binaries-strings-and-char-lists.html#utf-8-and-unicode>.
 
-The backtick <code>`</code> is not anything special here-- it's simply the character that precedes `a` in the numerical list of character codes.  In the Acquirex code, the board was extended by one space on each side of the square, so columns a through i became columns ` through j.
+The backtick <code>`</code> is not anything special here-- it's simply the character that precedes `a` in the numerical list of character codes.  In the Acquirex source code, the board was extended by one space on each side of the square, so columns a through i became columns ` through j.
 
-The `for ... <- ... do ... end` syntax is a [list comprehension][comprehensions].  You may have used for loops in an imperative language, and in its simplest form, this is similar, but it can do much more.
+The `for ... <- ... do ... end` syntax is a [list comprehension][comprehensions].  You may have used for loops in an imperative language, and in its simplest form, this is similar, (but it can do much more.)
 
-Our (much simpler) game board looks like this.
+Let's start with a simple board that looks a lot like the game:
+
+In `lib/connect_four/board.ex`:
+
+{% highlight elixir %}
+defmodule ConnectFour.Board do
+  use Supervisor
+
+  @registered_name ConnectFourBoard
+
+  def start_link do
+    Supervisor.start_link(__MODULE__, [], [name: @registered_name])
+  end
+
+end
+{% endhighlight %}
+
+The parameters for the `start_link` function are:
+
+* the name of the module that will contain the callbacks (this one -- [`__MODULE__`][module] is a macro that resolves at compile time to the name of the current module),
+* an empty List for the parameters, (note that a Supervisor does not hold state,) and
+* a List of configuration.  Again we're registering the process with a name so we can find it later.
+
+Let's add the Board to the list of workers in the top-level ConnectFour module
+
+{% highlight diff %}
+diff --git a/lib/connect_four.ex b/lib/connect_four.ex
+index af57ebe..7a9ce86 100644
+--- a/lib/connect_four.ex
++++ b/lib/connect_four.ex
+@@ -10,6 +10,7 @@ defmodule ConnectFour do
+       # Define workers and child supervisors to be supervised
+       # worker(ConnectFour.Worker, [arg1, arg2, arg3]),
+       worker(ConnectFour.Game, []),
++      worker(ConnectFour.Board, []),
+     ]
+
+     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
+{% endhighlight %}
+
+And try to start it up:
+
+{% highlight bash %}
+$ iex -S mix
+Erlang/OTP 18 [erts-7.0.3] [source] [64-bit] [smp:8:8] [async-threads:10] [hipe] [kernel-poll:false] [dtrace]
+
+lib/connect_four/board.ex:15: warning: undefined behaviour function init/1 (for behaviour :supervisor)
+Compiled lib/connect_four/board.ex
+Generated connect_four app
+
+=INFO REPORT==== 22-Oct-2015::11:29:48 ===
+    application: logger
+    exited: stopped
+    type: temporary
+** (Mix) Could not start application connect_four: ConnectFour.start(:normal, []) returned an error: shutdown: failed to start child: ConnectFour.Board
+    ** (EXIT) an exception was raised:
+        ** (UndefinedFunctionError) undefined function: ConnectFour.Board.init/1
+            (connect_four) ConnectFour.Board.init(:no_args)
+            (stdlib) supervisor.erl:272: :supervisor.init/1
+            (stdlib) gen_server.erl:328: :gen_server.init_it/6
+            (stdlib) proc_lib.erl:239: :proc_lib.init_p_do_apply/3
+{% endhighlight%}
+
+Unlike with the GenServer, a Supervisor module with only a `start_link` function DOESN'T work.  It expects to find an `init/1` function that describes what needs to be supervised.
+
+That's because we're using [`Supervisor.start_link/3`][supervisor-start-link-3] which says "To start the supervisor, the init/1 callback will be invoked in the given module."
+
+Here's the full Board implementation, based on Torben's Acquirex code.
 
 In `lib/connect_four/board.ex`:
 
@@ -225,22 +296,7 @@ defmodule ConnectFour.Board do
 end
 {% endhighlight %}
 
-Let's add the Board to the list of workers in the top-level ConnectFour module and try this again to see what errors we get.
-
-{% highlight diff %}
-diff --git a/lib/connect_four.ex b/lib/connect_four.ex
-index af57ebe..7a9ce86 100644
---- a/lib/connect_four.ex
-+++ b/lib/connect_four.ex
-@@ -10,6 +10,7 @@ defmodule ConnectFour do
-       # Define workers and child supervisors to be supervised
-       # worker(ConnectFour.Worker, [arg1, arg2, arg3]),
-       worker(ConnectFour.Game, []),
-+      worker(ConnectFour.Board, []),
-     ]
-
-     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
-{% endhighlight %}
+And try this again to see what errors we get.
 
 {% highlight bash %}
 $ iex -S mix
@@ -269,7 +325,7 @@ $
 
 See what's happening?  The overall Application `ConnectFour` couldn't start because `Board` couldn't start, and `Board` couldn't start because there is no `ConnectFour.Space` module available with a `start_link/1` function that expects a two-element tuple.
 
-Let's add the `ConnectFour.Space` module that is mentioned above, so that Board can create its workers and supervise them.
+Let's add the `ConnectFour.Space` module that is mentioned above, so that `Board` can create its workers and supervise them.
 
 In `lib/connect_four/space.ex`:
 
@@ -284,9 +340,9 @@ defmodule ConnectFour.Space do
 end
 {% endhighlight %}
 
-This will register a process for each Space as R1C1, R3C5, etc., up to R6C7.  If you don't do this, you'll have a hard time finding them again to get and or update the state.  Also, each space starts out with a state of `Empty`.
+This will register a process for each Space as R1C1, R3C5, etc., up to R6C7.  The name itself is arbitrary, but if you don't name them something you can re-construct later, you'll have a hard time finding them again to get and/or update the state.  Also, each space starts out with a state of `Empty`.
 
-Let's pop into IEx and explore this a bit.
+Let's explore this a bit in IEx:
 
 {% highlight bash %}
 $ iex -S mix
@@ -347,17 +403,17 @@ In `lib/connect_four/board.ex`:
 
 {% highlight elixir %}
   def print do
-    for row <- @last_row..1, do: print_columns(row)
+    for row <- @last_row..1, do: print_columns(row) # 1
   end
 
   def print_columns(row) do
-    for col <- 1..@last_column, do: print_space(row,col)
+    for col <- 1..@last_column, do: print_space(row,col) # 2
     IO.write "\n"
   end
 
   def print_space(row, col) do
-    agent_name(row,col)
-    |> Process.whereis
+    agent_name(row,col)         # 3
+    |> Process.whereis          # 4
     |> Agent.get(fn x -> x end)
     |> convert_for_display
     |> IO.write
@@ -377,13 +433,13 @@ In `lib/connect_four/board.ex`:
   end
 {% endhighlight %}
 
-I'm printing the rows in reverse, because when I worked on the logic for this last year I discovered that it's easier to think of the *bottom* row as row #1.  This will be clearer when we look at what happens during a player's turn as they choose a column and drop a game piece into it.
+`# 1`: I'm printing the rows in reverse, because when I worked on the logic for this last year I discovered that it's easier to think of the *bottom* row as row #1.  This will be clearer when we look at what happens during a player's turn as they choose a column and drop a game piece into it.
 
-For each row, we'll print the columns left to right and then a linebreak.
+`# 2`: For each row, we'll print the columns left to right and then a linebreak.
 
-For each space, we look up the agent by its registered name, get the state, and convert it to either ".", "R", "B" or ? for display.
+`# 3`: For each space, we look up the agent by its registered name, get the state, and convert it to either ".", "R", "B" or ? for display.
 
-Recall that the pipe operator `|>` sends the result of each line into the next as the first function parameter.  The first two lines could be written as: `Process.whereis( agent_name(row,col) )` (and in fact they originally were!)
+`# 4`: Recall that the pipe operator `|>` sends the result of each line into the next as the first function parameter.  The first two lines of `print_space` could be written as: `Process.whereis( agent_name(row,col) )` (and in fact they originally were!)
 
 And let's see this in action:
 
@@ -422,6 +478,9 @@ Copyright 2015 Wendy Smoak - This post first appeared on [{{ site.url }}][site-u
 * [Acquirex source code][acquirex]
 * [Torben Hoffmann - @LeHoff on Twitter][torben]
 * [Connect Four on Wikipedia][connect-four]
+* [Connect Four in Ruby][connect-four-rb]
+* [Elixir Comprehensions][comprehensions]
+* [Elixir Kernel `__MODULE__`][module]
 
 [video]: https://www.erlang-solutions.com/resources/webinars/explore-elixir-using-board-game-logic
 [acquirex]: https://github.com/lehoff/acquirex/
@@ -432,6 +491,7 @@ Copyright 2015 Wendy Smoak - This post first appeared on [{{ site.url }}][site-u
 [acquirex-test]: https://github.com/lehoff/acquirex/blob/master/test/acquirex_test.exs
 [comprehensions]: http://elixir-lang.org/getting-started/comprehensions.html
 [module]: http://elixir-lang.org/docs/stable/elixir/Kernel.SpecialForms.html#__MODULE__/0
+[supervisor-start-link-3]: http://elixir-lang.org/docs/master/elixir/Supervisor.html#start_link/3
 [style-guide]: https://github.com/niftyn8/elixir_style_guide#modules
 [cc-by-nc]:  http://creativecommons.org/licenses/by-nc/3.0/
 [site-url]: {{ site.url }}
