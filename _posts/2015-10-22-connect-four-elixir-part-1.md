@@ -9,27 +9,27 @@ After watching the Erlang Solutions [webinar on game logic in Elixir][video] wit
 
 I worked on the Connect Four logic last year [in Ruby][connect-four-rb] and then started on it [in JavaScript][connect-four-js] when I was thinking of attending Hacker School (now Recurse Center) and needed some code for the interview.
 
-My Elixir knowledge is limited at this point.  I've read books and documentation, typed in lots of examples, and solved a few exercises on my own, but I don't immediately know what language constructs to use to solve an arbitrary problem.  Going into this I have a vague idea that I should default to creating a process for most things, and keep an eye out for places that pattern matching and recursion might be used to solve a problem.
+My Elixir knowledge is limited at this point.  I've read books and documentation, typed in lots of examples, and solved a few exercises on my own, but I don't immediately know what language constructs to use to solve an arbitrary problem.  Going into this I think I should default to creating a process for most things, and keep an eye out for places that pattern matching and recursion might be used to solve a problem.
 
 ### First Version
 
 My first attempt involved generating a project with a supervision tree and then adding in some modules like "Game" and "Player" and "Board" and "Space".  I just made them Agents as I knew they would need to hold some state, and I had no reason to pick anything else.
 
-Then I got stuck trying to figure out how to talk to them.  When the children get started, how do I find the PIDs?  Am I supposed to store those? Can I look them up somehow?
+Then I got stuck trying to figure out how to talk to them.  When the children get started, how do I find the process IDs?  Am I supposed to store those? Can I look them up somehow?
 
-I asked on Slack and was pointed to `gproc` which is a generic process registry.  Interesting (and it is used in Acquirex) but it seems like overkill here.  I learned about registered names for processes.
+I asked on Slack and was pointed to `gproc` which is a generic process registry.  Interesting (and it is used in the Acquirex code) but it seems like overkill here.  I learned about registered names for processes.
 
 Moving on to sending messages to those processes... well, they're Agents.  They hold state.  They don't listen for messages.  Which told me that they ought to be GenServers instead!
 
-I switched most of them over.  So now I can start them all up and they look very pretty in the observer... but they don't *do* anything.  How do you begin the game?  Should it prompt for the player name? Ask for a move? If so, which process does that?
+I switched most of them over.  So now I can start them all up and they look very pretty in the Observer... but they don't *do* anything.  How do you begin the game?  Should it prompt for the player name? Ask for a move? If so, which process does that?
 
-I went back to Acquirex and poked around, and figured out that you need to `Acquirex.Player_Supervisor.new_player(:wendy)` and then `Acquirex.Game.begin` ... then what?  Someone pointed out [the test][acquirex-test] that serves as a usage example.
+I went back to Acquirex and looked around, and figured out that you need to `Acquirex.Player_Supervisor.new_player(:wendy)` and then `Acquirex.Game.begin` ... then what?  Someone pointed out [the test][acquirex-test] that serves as a usage example.
 
-So... the "game" here is simply the game state and accepting messages to modify the state.  It shouldn't be combined with the client code that *sends* those messages into the game, after prompting the human user however it's going to do that. Currently in the Acquirex code, you can use iex to call the functions that cause the messages to be sent.
+So... the "game" here is simply the game state and accepting messages to modify the state.  It isn't combined with the client code that *sends* those messages into the game, after prompting the human user however it's going to do that. Currently in the Acquirex code, you can use IEx to call the functions that cause the messages to be sent.
 
 ### Second Version
 
-Armed with a bit more knowledge this time around, let's start by generating a project with a supervision tree:
+Armed with a bit more knowledge, let's start over by generating a project with a supervision tree:
 
 {% highlight bash %}
 $ mix new connect_four --sup
@@ -43,7 +43,7 @@ $ git add .
 $ git commit -m "Initial commit of generated Elixir project with supervision tree"
 {% endhighlight %}
 
-Now what?  I suppose in a perfect world I would write some tests, but at the moment I have no idea what I would be testing.  So let's write some code instead!
+Now what?  I suppose in a perfect world I would write some tests, but at the moment I have no idea what I would be testing.  So let's write some code instead and see what errors we get!
 
 Here's the generated ConnectFour module:
 
@@ -86,14 +86,40 @@ index f885f12..af57ebe 100644
      # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
 {% endhighlight %}
 
-And now we need to define the module.  [Convention][style-guide] says that a module named `ConnectFour.Game` will go in a `game.ex` file in the `lib/connect_four` directory.
+If you try to start this up right now, it will complain:
+
+{% highlight bash %}
+$ iex -S mix
+Erlang/OTP 18 [erts-7.0.3] [source] [64-bit] [smp:8:8] [async-threads:10] [hipe] [kernel-poll:false] [dtrace]
+
+Compiled lib/connect_four.ex
+Generated connect_four app
+
+=INFO REPORT==== 22-Oct-2015::10:05:01 ===
+    application: logger
+    exited: stopped
+    type: temporary
+** (Mix) Could not start application connect_four: ConnectFour.start(:normal, []) returned an error: shutdown: failed to start child: ConnectFour.Game
+    ** (EXIT) an exception was raised:
+        ** (UndefinedFunctionError) undefined function: ConnectFour.Game.start_link/0 (module ConnectFour.Game is not available)
+            ConnectFour.Game.start_link()
+            (stdlib) supervisor.erl:343: :supervisor.do_start_child/2
+            (stdlib) supervisor.erl:326: :supervisor.start_children/3
+            (stdlib) supervisor.erl:292: :supervisor.init_children/2
+            (stdlib) gen_server.erl:328: :gen_server.init_it/6
+            (stdlib) proc_lib.erl:239: :proc_lib.init_p_do_apply/3
+{% endhighlight %}
+
+You can see that it expects the `ConnectFour.Game` module to exist, and to have a `start_link/0` function.  If we had specified any arguments instead of the empty list `[]` then it would be looking for start_link/1 or start_link/2, etc., depending on how many arguments there were.
+
+So now we need to define the module and function it's looking for.  [Convention][style-guide] says that a module named `ConnectFour.Game` will go in a `game.ex` file in the `lib/connect_four` directory.
 
 {% highlight bash %}
 $ mkdir lib/connect_four
 $ touch lib/connect_four/game.ex
 {% endhighlight %}
 
-What should it be? The Game will probably need to keep track of some sort of state, which means Agent is a possibility, but it will definitely need to receive messages like "Red player drops a game piece in column 3" -- because of the messages, let's go with GenServer.
+What should it be? The Game will probably need to keep track of some sort of state, which means `Agent` is a possibility, but it will definitely need to receive messages like "Red player drops a game piece in column 3" -- because of the messages, let's go with `GenServer`.
 
 In `lib/connect_four/game.ex`:
 
@@ -110,7 +136,11 @@ defmodule ConnectFour.Game do
 end
 {% endhighlight %}
 
-GenServer is a module that abstracts the loop that holds the state as well as the receive loop that listens for messages.  The `start_link` function is called with the name of the module that will contain the callbacks (this one -- `__MODULE__` simply resolves at compile time to the name of the current module), an empty Map for the state, and a list of configuration.  In this case we're registering the process with a  name so we can find it later.
+GenServer is a module that abstracts the loop that holds the state as well as the receive loop that listens for messages.  The parameters for the `start_link` function are:
+
+* the name of the module that will contain the callbacks (this one -- [`__MODULE__`][module] is a macro that resolves at compile time to the name of the current module),
+* an empty Map for the initial state, and
+* a list of configuration.  In this case we're registering the process with a  name so we can find it later.
 
 Now you should be able to start this up...
 
@@ -131,11 +161,9 @@ iex(1)>
 
 ![Observer Game](/images/2015/10/connect-four-observer-game.png)
 
-Note that the `name: __MODULE__` bit when we started the GenServer ended up with that process being named Elixir.ConnectFourGame.  That's because ConnectFourGame is an atom (it starts with an uppercase letter) and gets Elixir pre-pended to it.
+Note that the registered name is displayed in the Observer. This comes from `name: @registered_name` (substituted as `name: Elixir.ConnectFourGame` at compile time).  `ConnectFourGame` is an atom, and uppercase atoms automatically get an `Elixir` prefix.
 
-CTRL-C twice to get out of iex.
-
-Commit your changes.
+CTRL-C twice to get out of iex and commit your changes.
 
 {% highlight bash %}
 $ git add . && git commit -m "Add Game module as GenServer"
@@ -143,7 +171,7 @@ $ git add . && git commit -m "Add Game module as GenServer"
 
 # The Board Grid
 
-The next thing I'd like to do is print the board grid so I can see what I've got.  Well, that means we need a Board module, and probably some Spaces!
+The next thing I'd like to do is print the board grid to make it easier to see the players' moves.  Well, that means we need a Board module, and probably some Spaces!
 
 But first, how is this going to work?  Let's say you've started up the project in IEx.  Maybe you'll type `ConnectFour.Game.print_board` and expect to see the 7-by-6 grid.  We'll go with that for now.
 
@@ -162,11 +190,13 @@ And here is the extended_all function that returns all of the row/column combina
 
 Curious about that question mark?  It returns the code point's value for the character that follows.  See <http://stackoverflow.com/questions/26995608/what-does-do-in-elixir> and <http://elixir-lang.org/getting-started/binaries-strings-and-char-lists.html#utf-8-and-unicode>.
 
-The backtick <code>`</code> is not anything special here-- it's simply the character that precedes 'a' in the numerical list of character codes.
+The backtick <code>`</code> is not anything special here-- it's simply the character that precedes `a` in the numerical list of character codes.  In the Acquirex code, the board was extended by one space on each side of the square, so columns a through i became columns ` through j.
 
-The `for ... <- ... do ... end` syntax is a list comprehension.  You may have used for loops in an imperative language, and in its simplest form, this is similar, but it can do much more.
+The `for ... <- ... do ... end` syntax is a [list comprehension][comprehensions].  You may have used for loops in an imperative language, and in its simplest form, this is similar, but it can do much more.
 
-Our (much simpler) game board looks like this:
+Our (much simpler) game board looks like this.
+
+In `lib/connect_four/board.ex`:
 
 {% highlight elixir %}
 defmodule ConnectFour.Board do
@@ -195,26 +225,7 @@ defmodule ConnectFour.Board do
 end
 {% endhighlight %}
 
-When we add the Board to the list of children in the top-level ConnectFour Application, that will cause the start_link function above to get called.  When the `Supervisor.start_link` line is executed, Supervisor will use the parameters to call back to the init function in the named module, passing `:no_args` as the only parameter.
-
-We'll also need the `ConnectFour.Space` module that is mentioned above, so that Board can create its workers and supervise them.
-
-In `lib/connect_four/space.ex`:
-
-{% highlight elixir %}
-defmodule ConnectFour.Space do
-
-  def start_link({row,column}) do
-    name = String.to_atom("R#{row}C#{column}")
-    Agent.start_link(fn -> Empty end, [name: name])
-  end
-
-end
-{% endhighlight %}
-
-This will register the Agent for each Space as R1C1, R3C5, etc., up to R6C7.  If you don't do this, you'll have a hard time finding them again to get and or update the state.  Also, each space starts out with a state of `Empty`.
-
-Finally, we need to add the Board to the list of children in the top-level ConnectFour module that was generated for us:
+Let's add the Board to the list of workers in the top-level ConnectFour module and try this again to see what errors we get.
 
 {% highlight diff %}
 diff --git a/lib/connect_four.ex b/lib/connect_four.ex
@@ -230,6 +241,50 @@ index af57ebe..7a9ce86 100644
 
      # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
 {% endhighlight %}
+
+{% highlight bash %}
+$ iex -S mix
+Erlang/OTP 18 [erts-7.0.3] [source] [64-bit] [smp:8:8] [async-threads:10] [hipe] [kernel-poll:false] [dtrace]
+
+Compiled lib/connect_four.ex
+Compiled lib/connect_four/board.ex
+Generated connect_four app
+
+=INFO REPORT==== 22-Oct-2015::10:19:33 ===
+    application: logger
+    exited: stopped
+    type: temporary
+** (Mix) Could not start application connect_four: ConnectFour.start(:normal, []) returned an error: shutdown: failed to start child: ConnectFour.Board
+    ** (EXIT) shutdown: failed to start child: {1, 1}
+        ** (EXIT) an exception was raised:
+            ** (UndefinedFunctionError) undefined function: ConnectFour.Space.start_link/1 (module ConnectFour.Space is not available)
+                ConnectFour.Space.start_link({1, 1})
+                (stdlib) supervisor.erl:343: :supervisor.do_start_child/2
+                (stdlib) supervisor.erl:326: :supervisor.start_children/3
+                (stdlib) supervisor.erl:292: :supervisor.init_children/2
+                (stdlib) gen_server.erl:328: :gen_server.init_it/6
+                (stdlib) proc_lib.erl:239: :proc_lib.init_p_do_apply/3
+$
+{% endhighlight %}
+
+See what's happening?  The overall Application `ConnectFour` couldn't start because `Board` couldn't start, and `Board` couldn't start because there is no `ConnectFour.Space` module available with a `start_link/1` function that expects a two-element tuple.
+
+Let's add the `ConnectFour.Space` module that is mentioned above, so that Board can create its workers and supervise them.
+
+In `lib/connect_four/space.ex`:
+
+{% highlight elixir %}
+defmodule ConnectFour.Space do
+
+  def start_link({row,column}) do
+    name = String.to_atom("R#{row}C#{column}")
+    Agent.start_link(fn -> Empty end, [name: name])
+  end
+
+end
+{% endhighlight %}
+
+This will register a process for each Space as R1C1, R3C5, etc., up to R6C7.  If you don't do this, you'll have a hard time finding them again to get and or update the state.  Also, each space starts out with a state of `Empty`.
 
 Let's pop into IEx and explore this a bit.
 
@@ -288,7 +343,7 @@ index 7a8bd81..ee6ff73 100644
 
 We're delegating the printing to the Board itself.
 
-In lib/connect_four/board.ex:
+In `lib/connect_four/board.ex`:
 
 {% highlight elixir %}
   def print do
@@ -301,14 +356,15 @@ In lib/connect_four/board.ex:
   end
 
   def print_space(row, col) do
-    Process.whereis( agent_name(row,col) )
+    agent_name(row,col)
+    |> Process.whereis
     |> Agent.get(fn x -> x end)
     |> convert_for_display
     |> IO.write
   end
 
-  def convert_for_display(player) do
-    case player do
+  def convert_for_display(agent_state) do
+    case agent_state do
       Empty -> "."
       :red -> "R"
       :black -> "B"
@@ -322,6 +378,12 @@ In lib/connect_four/board.ex:
 {% endhighlight %}
 
 I'm printing the rows in reverse, because when I worked on the logic for this last year I discovered that it's easier to think of the *bottom* row as row #1.  This will be clearer when we look at what happens during a player's turn as they choose a column and drop a game piece into it.
+
+For each row, we'll print the columns left to right and then a linebreak.
+
+For each space, we look up the agent by its registered name, get the state, and convert it to either ".", "R", "B" or ? for display.
+
+Recall that the pipe operator `|>` sends the result of each line into the next as the first function parameter.  The first two lines could be written as: `Process.whereis( agent_name(row,col) )` (and in fact they originally were!)
 
 And let's see this in action:
 
@@ -346,8 +408,6 @@ iex(2)>
 
 The dots indicate empty spaces.  If there were red or black pieces they would be represented by R or B.  (And if there is anything else in a space, a question mark will be displayed.)
 
-
-
 ### Conclusion
 
 This concludes Part 1 of Connect Four in Elixir.  We've generated a project with a supervision tree and filled in the Game, Board and Space modules.  Next we'll see how to handle the players' moves and update the board.
@@ -370,6 +430,8 @@ Copyright 2015 Wendy Smoak - This post first appeared on [{{ site.url }}][site-u
 [connect-four-rb]: https://github.com/wsmoak/hackerschool/blob/master/connect-four.rb
 [connect-four-js]: https://github.com/wsmoak/hackerschool/blob/master/connect-four.js
 [acquirex-test]: https://github.com/lehoff/acquirex/blob/master/test/acquirex_test.exs
+[comprehensions]: http://elixir-lang.org/getting-started/comprehensions.html
+[module]: http://elixir-lang.org/docs/stable/elixir/Kernel.SpecialForms.html#__MODULE__/0
 [style-guide]: https://github.com/niftyn8/elixir_style_guide#modules
 [cc-by-nc]:  http://creativecommons.org/licenses/by-nc/3.0/
 [site-url]: {{ site.url }}
