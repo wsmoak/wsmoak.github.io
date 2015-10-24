@@ -19,3 +19,7 @@ tag_feed_dir: tag
 highlighter: pygments
 
 port: 3050
+
+plantuml:
+  plantuml_jar: ~/Applications/plantuml/plantuml.8031.jar
+  tmp_folder: _plantuml # temporary folder for generated image files
