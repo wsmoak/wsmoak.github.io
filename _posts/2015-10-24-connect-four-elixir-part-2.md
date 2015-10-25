@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Connect Four in Elixir (Part 2)"
-date:   2015-10-24 12:45:00
+date:   2015-10-24 22:00:00
 tags: elixir game
 ---
 
@@ -29,9 +29,9 @@ Let's add that function to `lib/connect_four/game.ex`:
 
 Recall that Game is a GenServer, and here we're using GenServer.call/2 with the registered name of the Game process, and the message to send.
 
-The `:ok` in the case statement is arbitrary -- you define what the reply from the handle_call will be.
+The `:ok` in the case statement is arbitrary -- you define what the reply from the `handle_call` function will be.
 
-The three-element tuple `{:move, player, column}` is also arbitrary, you can structure the message however you want. It just needs to match in the `handle_call`:
+The three-element tuple `{:move, player, column}` is also arbitrary, you can structure the message however you want. It just needs to match in `handle_call`:
 
 {% highlight elixir %}
   def handle_call({:move, player, column}, _from, state) do
@@ -43,7 +43,7 @@ The three-element tuple `{:move, player, column}` is also arbitrary, you can str
 
 We're not doing anything with the process ID of the sending process so it is ignored by adding an underscore: `_from`.
 
-The state is passed to handle_call and we can either make a change and return a different state, or just return the same state.
+The state is passed to `handle_call` and we can either make a change and return a different state, or just return the same state.
 
 When that call comes in, we need to tell the Board to place the token into one of the spaces.
 
@@ -68,7 +68,7 @@ Let's assume everything went well and the move was accepted:
   end
 {% endhighlight %}
 
-`# 1`: Here we see the state held in the Game being updated -- this is handled for us by the GenServer.  We'll keep track of the player who moved last, so that later we can do some error handling if the same player tries to move twice in a row.
+`# 1`: Here we see the state held in the Game being updated.  We'll keep track of the player who moved last, so that later we can do some error handling if the same player tries to move twice in a row.
 
 `# 2`: Here we see the `:ok` that we matched on in the `move/2` function.
 
@@ -137,7 +137,7 @@ end box
 
 ![Game GenServer](/images/2015/10/connect-four-game-genserver-sequence.png)
 
-The code for the Game's Client API and Server Callbacks all lives in the ConnectFour.Game module, but it gets executed in two different processes, in this case the IEx.Evaluator process and the ConnectFourGame process.
+(With apologies for misusing the symbols in a sequence diagram...)  The code for the Game's Client API and Server Callbacks all lives in the ConnectFour.Game module, but it gets executed in two different processes, in this case the IEx.Evaluator process and the ConnectFourGame process.
 
 To prove it, add some code to the handle_call function in the Game module:
 
@@ -184,7 +184,7 @@ If you then look in the Observer, on the Processes tab (click the Pid column to 
 
 Now let's look at the `place_token` function and see how to modify the state of the appropriate space on the board.
 
-The player only selects the column.  It's up to us to figure out which space the game piece will "fall" down to in a vertically suspended grid and determine the row number.
+The player only selects the column.  It's up to us to figure out which row the game piece will fall down to in a vertically suspended grid and determine the row number.
 
 At first, let's just hard-code row number 1 and update the agent for row 1 in the specified column.  We still need to return `:move_accepted` as before.
 
@@ -230,7 +230,7 @@ iex(3)>
 
 Here you can see the 'R' indicating a red game piece in the first (bottom) row of the third column.
 
-But of course we can't always use row 1 -- we need to calculate the first (lowest) empty row for the specified column.  How about this?
+But of course we can't always use row 1 -- we need to calculate the lowest empty row for the specified column.  How about this?
 
 {% highlight diff %}
 diff --git a/lib/connect_four/board.ex b/lib/connect_four/board.ex
@@ -249,36 +249,38 @@ index e3cb71d..ddd600b 100644
    end
 
 +  def first_empty(col) do
-+    first_empty(1,col)
++    first_empty(1,col)           #1
 +  end
 +
 +  def first_empty(row, col) do
 +    if empty_space?(row,col) do
 +      row
 +    else
-+      first_empty(row+1,col)     #1
++      first_empty(row+1,col)     #2
 +    end
 +  end
 +
 +  def empty_space?(row,col) do
 +    agent_name(row,col)
 +    |> Process.whereis
-+    |> Agent.get( &(&1) )        #2
++    |> Agent.get( &(&1) )        #3
 +    |> is_empty?
 +  end
 +
 +  def is_empty?(val) do
-+    val == Empty                 #3
++    val == Empty                 #4
 +  end
 +
  end
 {% endhighlight %}
 
-`# 1`: Note the recursion in the `first_empty` function -- if the space is not empty, it calls itself with the next row up.
+`# 1`: While you can have optional parameters with default values, they have to go at the *end*.  Since it's the row we need to default, and everything else is (row,col) it would be too confusing to have this one function be (col, row // 1).
 
-`# 2`: `&(&1)` is function capture syntax for the identity function, equivalent to `fn x -> x end`.  There is no 'plain' `Agent.get`, you always have to provide a function that produces the value.
+`# 2`: Note the recursion in the `first_empty` function -- if the space is not empty, it calls itself with the next row up.
 
-`# 3`: Recall that the state of each space was set to `Empty` when it was created.
+`# 3`: `&(&1)` is function capture syntax for the identity function, equivalent to `fn x -> x end`.  There is no 'plain' `Agent.get`, you always have to provide a function that produces the value.
+
+`# 4`: Recall that the state of each space was set to `Empty` when it was created.
 
 And try this out:
 
@@ -318,7 +320,7 @@ $ git add . && git commit -m "Update the space in the first empty row when a pla
 
 We've seen how a GenServer works behind the scenes, and how to find the first empty row in a column, and how to update the Agent that holds the state of each space on the board.
 
-Next time we'll add some error handling. What if the players don't alternate turns?  What if the column they select is already full? (You can try it by making seven moves in the same column.)
+Next time we'll add some error handling. What if the players don't alternate turns?  What if the column they select is already full? (You can try it by making seven moves in the same column.)  We might also try to get rid of the conditional logic in `first_empty`.  And then we'll need to detect a "win" and stop the game.
 
 The code for this example is available at <https://github.com/wsmoak/connect_four/tree/20151024> and is Apache licensed.
 
