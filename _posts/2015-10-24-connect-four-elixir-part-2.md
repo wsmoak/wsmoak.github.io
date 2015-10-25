@@ -331,7 +331,7 @@ Copyright 2015 Wendy Smoak - This post first appeared on [{{ site.url }}][site-u
 * [Part 1 of Connect Four in Elixir][part-1]
 * [GenServer.handle_call/3][handle_call]
 
-[part-1]: http://wsmoak.net/2015/11/22/connect-four-elixir-part-1.html
+[part-1]: http://wsmoak.net/2015/10/22/connect-four-elixir-part-1.html
 [handle_call]: http://elixir-lang.org/docs/master/elixir/GenServer#c:handle_call/3
 [cc-by-nc]:  http://creativecommons.org/licenses/by-nc/3.0/
 [site-url]: {{ site.url }}
