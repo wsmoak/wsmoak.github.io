@@ -129,7 +129,7 @@ Now in IEx we get:
 > ConnectFour.Game.move(:red,3)
 "Successful move for red player in column 3"
 
-iex(2)> ConnectFour.Game.move(:red,3)
+> ConnectFour.Game.move(:red,3)
 "It's not your turn!"
 {% endhighlight %}
 
@@ -192,7 +192,7 @@ Here's what placing a token looks like now in `lib/connect_four/game.ex/`:
     end
   end
 
-  def column_winner?(player,row,col,count) when row == 1   #1
+  def column_winner?(player,row,col,count) when row == 1 do  #1
     false
   end
 {% endhighlight %}
@@ -204,6 +204,49 @@ Here's what placing a token looks like now in `lib/connect_four/game.ex/`:
 `#3`: the neighbor is not the same, and we haven't yet found 4, so it's not a win.
 
 I still don't like all the conditional logic in this.  If you see a better way to do it, add a comment!
+
+Let's see this work in IEx:
+
+{% highlight bash %}
+$ iex -S mix
+
+iex(1)> ConnectFour.Game.move(:red,3)
+"Successful move for red player in column 3"
+
+iex(2)> ConnectFour.Game.move(:black,3)
+"Successful move for black player in column 3"
+
+iex(3)> ConnectFour.Game.move(:red,3)
+"Successful move for red player in column 3"
+
+iex(4)> ConnectFour.Game.move(:black,4)
+"Successful move for black player in column 4"
+
+iex(5)> ConnectFour.Game.move(:red,3)
+"Successful move for red player in column 3"
+
+iex(6)> ConnectFour.Game.move(:black,4)
+"Successful move for black player in column 4"
+
+iex(7)> ConnectFour.Game.move(:red,3)
+"Successful move for red player in column 3"
+
+iex(8)> ConnectFour.Game.move(:black,4)
+"Successful move for black player in column 4"
+
+iex(9)> ConnectFour.Game.move(:red,3)
+"Player red wins!"
+
+iex(10)> ConnectFour.Game.print_board
+..R....
+..R....
+..R....
+..RB...
+..BB...
+..RB...
+[:ok, :ok, :ok, :ok, :ok, :ok]
+iex(11)>
+{% endhighlight %}
 
 Detecting a win on the row is more complicated because you have to look both left and right along the row.  This is left as an exercise for the reader. :)
 
