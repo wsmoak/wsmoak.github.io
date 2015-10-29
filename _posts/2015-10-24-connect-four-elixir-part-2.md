@@ -61,7 +61,7 @@ Let's assume everything went well and the move was accepted:
 {% highlight elixir %}
   def handle_call({:move, player, column}, _from, state) do
     case ConnectFour.Board.place_token(player, column) do
-      {:move_accepted} ->
+      :move_accepted ->
         newstate = Map.put(state, :last_moved, player) # 1
         {:reply, :ok, newstate}                        # 2
     end
