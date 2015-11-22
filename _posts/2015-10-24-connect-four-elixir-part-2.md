@@ -99,12 +99,16 @@ $ git add . && git commit -m "initial code for a player's move"
 
 What's happening here?  This is what the high level sequence diagram looks like:
 
+<!-- Source to generate diagram
 {% plantuml %}
 IEx -> Game : move(:red,3)
 Game -> Board : place_token(:red, 3)
 Board -> Game : :move_accepted
 Game -> IEx : "Successful move for..."
 {% endplantuml %}
+ -->
+
+ ![Game GenServer](/images/2015/10/connect-four-game-high-level-sequence.png)
 
 But there's more going on -- Game is a GenServer with a client API and server callbacks.
 
@@ -330,8 +334,12 @@ Copyright 2015 Wendy Smoak - This post first appeared on [{{ site.url }}][site-u
 
 * [Part 1 of Connect Four in Elixir][part-1]
 * [GenServer.handle_call/3][handle_call]
+* [PlantUML Sequence Diagrams][plantuml-sequence]
+* [PlantUML Image Generator][plantuml-server]
 
 [part-1]: http://wsmoak.net/2015/10/22/connect-four-elixir-part-1.html
 [handle_call]: http://elixir-lang.org/docs/master/elixir/GenServer#c:handle_call/3
+[plantuml-sequence]: http://plantuml.com/sequence.html
+[plantuml-form]: http://plantuml.com/plantuml/form
 [cc-by-nc]:  http://creativecommons.org/licenses/by-nc/3.0/
 [site-url]: {{ site.url }}
