@@ -99,13 +99,13 @@ $ git add . && git commit -m "initial code for a player's move"
 
 What's happening here?  This is what the high level sequence diagram looks like:
 
-<!-- Source to generate diagram
-{% plantuml %}
+<!-- Source to generate diagram with plantuml plugin
+
 IEx -> Game : move(:red,3)
 Game -> Board : place_token(:red, 3)
 Board -> Game : :move_accepted
 Game -> IEx : "Successful move for..."
-{% endplantuml %}
+
  -->
 
  ![Game GenServer](/images/2015/10/connect-four-game-high-level-sequence.png)
