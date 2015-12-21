@@ -2,7 +2,7 @@
 layout: post
 title:  "Connecting Phoenix to Fitbit with OAuth2 (Part 1)"
 date:   2015-07-20 8:04:00
-tags: elixir phoenix oauth2
+tags: elixir phoenix oauth2 fitbit
 ---
 
 Now that we've learned to [create a Phoenix app, add a Users model, and deploy it all to Heroku][prev-blog], it's time to add authentication.  In this example we'll learn how to hook our Phoenix app up to Fitbit with OAuth2.
