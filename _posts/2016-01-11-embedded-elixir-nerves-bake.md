@@ -39,6 +39,8 @@ With a few commands we can retrieve a toolchain and system, create a firmware im
 
 Starting from the project I had developed directly on the Raspberry Pi, I [cloned the source][cf] on my Mac and followed the instructions on [www.bakeware.io][bake]:
 
+Note: This post has been updated for bake 0.1.0 as of Jan 12, 2016.  The project is undergoing rapid changes right now, so if things seem not to work, check the [Bakeware][bake] site for updates.
+
 **1:** First, install Bake.  I encourage you to grab the script and review it before just pasting in the command to download and execute it.  A quick read will reveal that it installs the `bake`, `fwup` and `squashfs` utilities.  At the moment, it's a Ruby script but it may get converted to Elixir eventually.
 
 {% highlight bash %}
@@ -58,7 +60,7 @@ platform :nerves
 default_target :rpi2
 
 target :rpi2,
-  recipe: "nerves/rpi2"
+  recipe: {"nerves/rpi2", "~> 0.1"}
 {% endhighlight %}
 
 **3:** Download a "system" and a "toolchain".  Because we included a `default_target` in the Bakefile, we don't have to specify it here.  If you need more than one, use `--target all` with each command.
@@ -68,7 +70,7 @@ $ bake system get
 $ bake toolchain get
 {% endhighlight %}
 
-You can find the files it downloaded in your home directory under `~/.nerves`.
+You can find the files it downloaded in your home directory under `~/.nerves`.  I can't find documentation on what exactly is in these or how they get created, but I'm sure it's coming.
 
 **4:** Compile the firmware for your target platform, including your project code.  Again it will pick up the default target automatically.
 
