@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Blinking LEDs and Spinning Servos with Elixir"
-date:   2016-01-01 10:00:00
+date:   2016-01-01 08:00:00
 tags: elixir robotics
 ---
 
