@@ -139,7 +139,9 @@ The customer navigates to your page, fills out the form which includes the Brain
 
 ## Update
 
-There is no way to modify the `vault_token` attribute via the API once a subscription is created.  To update the payment details on an existing subscription, you may direct customers to the Chargify-hosted Self-Service page, the Billing Portal, or you may use the Chargify Direct `card_update` endpoint.
+<s>There is no way to modify the `vault_token` attribute via the API once a subscription is created.</s> You can now change the default payment profile on an existing subscription via the API: <http://help.chargify.com/announcements/change-payment-profile.html>
+
+Alternately, to update the payment details on an existing subscription, you may direct customers to the Chargify-hosted Self-Service page, the Billing Portal, or you may use the Chargify Direct `card_update` endpoint.
 
 ## Summary
 
