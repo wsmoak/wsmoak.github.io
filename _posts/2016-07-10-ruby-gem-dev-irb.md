@@ -50,7 +50,7 @@ I searched, but Google and Stack Overflow did not have anything that helped.
 
 I tried a few things like `load`ing the `lib/currency_utils.rb` file, but that choked on the `require` statement that is generated into that file.  I tried it in a 'plain' (non gem) project with just the code in a file, and _that_ worked okay.  But I need it to work in a project where the code is under 'lib'.
 
-I have a vague grasp of `require` and `$LOAD_PATH` in Ruby, but not enough to know the answer to this, so I traipsed off to the #ruby channel on Freenode IRC and suffered the usual abuse [1] to learn that what I needed was to use the `-I` switch when starting `irb` and to specify the `lib` directory so that it will be on the loadpath.
+I have a vague grasp of `require` and `$LOAD_PATH` in Ruby, but not enough to know the answer to this, so I traipsed off to the #ruby channel on Freenode IRC and suffered [the usual abuse][irc-log] to learn that what I needed was to use the `-I` switch when starting `irb` and to specify the `lib` directory so that it will be on the loadpath.
 
 Now I can do:
 
@@ -80,6 +80,19 @@ alias irb='irb -I lib -r ${PWD/*\/}'
 
 How do YOU use irb (or pry) when working on a gem project?
 
+## Update
+
+On Twitter, [Greg Vaughan][gv] had the answer I was looking for: `bundle console`
+
+{% highlight bash %}
+$ bundle console
+Resolving dependencies...
+> CurrencyUtils::VERSION
+=> "0.1.0"
+{% endhighlight %}
+
+So now I have _that_ aliased as `bc` just like `bundle exec` is aliased as `be`.
+
 ## References
 
 * [Ruby Project Structure][rps]
@@ -95,3 +108,5 @@ How do YOU use irb (or pry) when working on a gem project?
 [urlp]: http://stackoverflow.com/questions/6671318/understanding-rubys-load-paths
 [htc]: http://tagaholic.me/2009/05/29/exploring-how-to-configure-irb.html
 [auto-load]: http://stackoverflow.com/questions/5424905/automatically-load-projects-environment-to-irb
+[irc-log]: http://irclog.whitequark.org/ruby/2016-07-10#16946303;
+[gv]: https://twitter.com/gregvaughn/status/752359465622441984
