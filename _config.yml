@@ -2,7 +2,7 @@
 title: Wendy Smoak
 email: wsmoak@gmail.com
 description:
-baseurl: "/blog/" # the subpath of your site, e.g. /blog/
+baseurl: "" # the subpath of your site, e.g. /blog/
 url: "http://wsmoak.github.io" # the base hostname & protocol for your site
 twitter_username: wsmoak
 github_username:  wsmoak
