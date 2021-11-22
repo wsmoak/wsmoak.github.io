@@ -1,0 +1,69 @@
+```{r setup, echo=FALSE}
+
+  # Adapted from http://datadrivensecurity.info/blog/posts/2015/Jun/running-other-languages-in-r-markdown-files/
+
+library(knitr)
+
+eng_elixir <- function(options) {
+
+  # create a temporary file
+
+  f <- basename(tempfile("temp", '.', paste('.', "exs", sep = '')))
+  on.exit(unlink(f)) # cleanup temp file on function exit
+  writeLines(options$code, f)
+
+  out <- ''
+
+  # if eval != FALSE compile/run the code, preserving output
+
+  if (options$eval) {
+    out <- system(sprintf('elixir %s', paste(f, options$engine.opts)), intern=TRUE)
+  }
+
+  # spit back stuff to the user
+
+  engine_output(options, options$code, out)
+}
+
+knitr::knit_engines$set(elixir=eng_elixir)
+
+```
+
+# Introduction
+
+This is an example document in Tufte Handout Format.  It is edited in RStudio in RMarkdown format and transformed into a PDF with File -> Knit from the menu, or Cmd-Shift-K.
+
+# Tufte Handout
+
+> Tufte Handouts[^tufte-handout] are documents formatted[^tufte-latex] in the style that Edward Tufte uses in his books and handouts. Tufte’s style is known for its extensive use of sidenotes, tight integration of graphics with text, and well-set typography:
+
+The format has the usual `#` and `##` headings. Also margin figures (see the equation --> over there, with a caption even,) as well as full-width and main-column figures. 
+
+\begin{marginfigure}
+$$ x^2 + y^2 = 1 $$
+\caption{An equation}
+\end{marginfigure}
+
+
+# Elixir Code
+
+Here is some Elixir code *and the output*, which was produced by executing the code at the time the PDF was created:
+
+\marginnote{This is a margin note.}
+
+```{elixir}
+defmodule Math do
+  def sum(a, b) do
+    a + b
+  end
+end
+
+IO.puts "The answer is #{ Math.sum(4,3) }"    
+```
+
+In the source[^source] of this document, you will find the code that makes this possible, adapted from an article on running Go snippets in RMarkdown files[^go-rmd].
+
+[^tufte-handout]: http://rmarkdown.rstudio.com/tufte_handout_format.html
+[^tufte-latex]: https://tufte-latex.github.io/tufte-latex/
+[^go-rmd]: http://datadrivensecurity.info/blog/posts/2015/Jun/running-other-languages-in-r-markdown-files/
+[^source]: https://gist.github.com/wsmoak/f5fd090df809e87a13fb
