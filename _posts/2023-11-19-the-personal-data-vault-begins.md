@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "The Personal Data Vault Begins"
-date:   2023-11-19 19:30:00 -0400
+date:   2023-11-19 17:30:00 -0400
 tags:   data-vault dbt python sql
 ---
 
