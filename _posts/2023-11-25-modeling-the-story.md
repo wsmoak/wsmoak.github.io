@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Modeling the Story"
-date:   2023-11-25 17:30:00 -0400
+date:   2023-11-25 11:00:00 -0400
 tags:   data-vault modeling
 ---
 
