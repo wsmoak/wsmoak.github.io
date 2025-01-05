@@ -11,7 +11,7 @@ OpenTelemetry provides powerful observability capabilities for Rails application
 
 Create a Rails app with `rails new -T rails-otel-demo`
 
-The configuration lives in [config/initializers/open_telemetry.rb](config/initializers/open_telemetry.rb) and demonstrates several key concepts:
+The configuration lives in [config/initializers/open_telemetry.rb][open-telemetry-rb] and demonstrates several key concepts:
 
 ```ruby
 OpenTelemetry::SDK.configure do |c|
@@ -57,7 +57,7 @@ Similarly if you know that the Kubernetes Namespace Name is set as `K8S_NAMESPAC
   SCR::K8S_NAMESPACE_NAME => resource_attrs[SCR::K8S_NAMESPACE_NAME] || ENV.fetch('K8S_NAMESPACE', 'unknown_namespace')
 ```
 
-(The code for parsing the resource attributes from the environment variable is in [config/initializers/open_telemetry.rb](https://github.com/wsmoak/rails-otel-demo/blob/1.0.0/config/initializers/open_telemetry.rb).)
+(The code for parsing the resource attributes from the environment variable is in [config/initializers/open_telemetry.rb][open-telemetry-rb].)
 
 This can help if other parts of your CI/CD process are injecting enviroment variables other than the standard ones, and/or you are using a service such as Seekrit or Doppler to control them.
 
@@ -132,5 +132,6 @@ I used Anthropic's Claude 3.5 Sonnet for help with some of the code and to draft
 
 [cc-by-nc]: https://creativecommons.org/licenses/by-nc/4.0/deed.en
 [site-url]: https://wsmoak.net
+[open-telemetry-rb]: https://github.com/wsmoak/rails-otel-demo/blob/1.0.0/config/initializers/open_telemetry.rb
 
 Copyright 2025 Wendy Smoak - This post first appeared on [wsmoak.net][site-url] and is [CC BY-NC][cc-by-nc] licensed.
