@@ -19,13 +19,13 @@ OpenTelemetry::SDK.configure do |c|
 end
 ```
 
-(The examples I found use `opentelemetry.rb` for this filename but the official project name is OpenTelemetry so by convention it should have the underscore.)
+(The examples I found use `opentelemetry.rb` for this filename, but the official project name is OpenTelemetry, so by convention it should have the underscore.)
 
 ### Resource Attributes
 
 The OTel Ruby SDK supports many of the standard OTel environment variables.  You can find a list of them in the [spec compliance matrix](https://github.com/open-telemetry/opentelemetry-specification/blob/main/spec-compliance-matrix.md#environment-variables).
 
-For example if you are using the `OTEL_RESOURCE_ATTRIBUTES` environment variable, it should have the following format for the value:
+For example if you are using the `OTEL_RESOURCE_ATTRIBUTES` environment variable, it should have the following 'comma separated, key-value pair' format for the value:
 ```sh
 OTEL_RESOURCE_ATTRIBUTES="k8s.namespace.name=the-namespace,k8s.pod.uid=a2b3c4d5-e6f7"
 ```
@@ -60,6 +60,8 @@ Similarly if you know that the Kubernetes Namespace Name is set as `K8S_NAMESPAC
 (The code for parsing the resource attributes from the environment variable is in [config/initializers/open_telemetry.rb][open-telemetry-rb].)
 
 This can help if other parts of your CI/CD process are injecting enviroment variables other than the standard ones, and/or you are using a service such as Seekrit or Doppler to control them.
+
+In cases where a developer is implementing OTel logging but does not have control over the deployment environment, workarounds like this may be necessary until the organization can standardize on the OTel environment variable names, at which point the code can be removed as the Ruby SDK will detect and use the environment variable values.
 
 ### Semantic Conventions
 
