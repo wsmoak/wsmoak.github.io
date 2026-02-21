@@ -5,8 +5,6 @@ date:   2026-02-21 14:30:00
 tags: ai ollama
 ---
 
-# Local LLMs on Rocky Linux with a Titan RTX
-
 After getting my hands on a Titan RTX with 24GB of VRAM, [shoutout to the un-imaginatively named [PC Server and Parts](https://pcserverandparts.com/)] I decided to move past hosted AI services and see what it could do in a Lenovo P920 with Rocky Linux.
 
 <a data-flickr-embed="true" href="https://www.flickr.com/photos/wsmoak/55081818171/in/dateposted-public/" title="260206_2038"><img src="https://live.staticflickr.com/65535/55081818171_f411e46d19_z.jpg" width="640" height="313" alt="260206_2038"/></a><script async src="//embedr.flickr.com/assets/client-code.js" charset="utf-8"></script>
