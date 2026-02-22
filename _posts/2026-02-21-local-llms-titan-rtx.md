@@ -46,12 +46,15 @@ podman run -d -p 9091:8080 \
 
 ## The VRAM Reality Check
 
-Gemini enthusiasically recommended Llama 3.3 70B for this setup.  The experience was... meditative. It was generating at about one word per second. Digging into the logs, I found the culprit:
+Gemini enthusiasically recommended Llama 3.3 70B for this setup.  The experience was... meditative. It was generating at about one word per second.
+Digging into the logs, I found the culprit:
 
 ```bash
 $ podman logs ollama 2>&1 | grep -i "offload"
 load_tensors: offloaded 29/81 layers to GPU
 ```
+
+When asked why it was so slow, Gemini described it as "like trying to race a Ferrari while towing a semi-truck".
 
 A 4-bit quantized 70B model needs about 42GB of VRAM to run entirely on the GPU. With my 24GB card, Ollama was offloading 65% of the work to my CPU and System RAM. The PCIe bus became the bottleneck.
 
