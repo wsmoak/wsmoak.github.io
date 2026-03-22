@@ -43,6 +43,7 @@ OpenSWE has a `SandboxBackendProtocol` — an interface that any sandbox must im
 
 The core of it is simpler than I expected. `DevPodBackend` extends `BaseSandbox`, which already implements all the file operations (`write`, `read`, `edit`, `grep`, `glob`) by delegating to `execute()`. So the only method I really needed to write was `execute()`:
 
+{% raw %}
 ```python
 def execute(self, command, timeout=120):
     wrapped = f"{{ {command}; }} 2>&1"
@@ -55,6 +56,7 @@ def execute(self, command, timeout=120):
         exit_code=result.returncode
     )
 ```
+{% endraw %}
 
 The `2>&1` wrapper is important — DevPod writes its own gRPC status messages to subprocess stderr alongside the command's stderr. By redirecting the command's stderr to stdout inside the shell, the agent gets clean output and DevPod's noise stays isolated.
 
