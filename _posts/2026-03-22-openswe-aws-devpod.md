@@ -157,7 +157,7 @@ The agent's first successful run commented on issue #1 instead of issue #85 — 
 
 After ~28 test attempts over two days (March 21-22), it all came together. The pipeline:
 
-1. I commented on [issue #85](https://github.com/wsmoak/rails-otel-demo/issues/85): `@openswe Add "Hello from OpenSWE at 2026-03-22 18:25 UTC" to the end of the README.md file`
+1. I commented on [issue #85](https://github.com/wsmoak/rails-otel-demo/issues/85): `@openswe Please add a line to the end of README.md that says 'Updated by OpenSWE at 2026-03-22 15:53:06 EDT' and open a pull request with the change.`
 2. GitHub sent a webhook to the ALB
 3. The LangGraph server received it and started an agent run
 4. The agent called DevPod, which spun up an EC2 instance (~96 seconds)
