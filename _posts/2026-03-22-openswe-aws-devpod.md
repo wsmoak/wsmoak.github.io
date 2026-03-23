@@ -166,6 +166,8 @@ After ~28 test attempts over two days (March 21-22), it all came together. The p
 
 The PR was opened by `wsmoak-open-swe[bot]` — a GitHub App created for this deployment.
 
+<a data-flickr-embed="true" href="https://www.flickr.com/photos/wsmoak/55163313765/in/dateposted-public/" title="openswe-devpod-pr-opened-260322_41421"><img src="https://live.staticflickr.com/65535/55163313765_6a994b1115_z.jpg" width="640" height="296" alt="openswe-devpod-pr-opened-260322_41421"/></a><script async src="//embedr.flickr.com/assets/client-code.js" charset="utf-8"></script>
+
 ## Cost
 
 For a test deployment that's only running when I'm actively using it:
