@@ -1,11 +1,11 @@
 ---
 layout: post
-title: "Open SWE with Multi-Repo Dev Containers in DevPod"
+title: "Open SWE with Multi-Repo Devcontainers in DevPod"
 date: 2026-04-05 20:00:00 -0400
 tags: openswe langgraph aws terraform devpod ecs fargate ai agent devcontainer
 ---
 
-Two weeks ago I wrote about [self-hosting OpenSWE on AWS with DevPod sandboxes](/2026/03/22/openswe-aws-devpod.html). That setup worked, but the agent was running in a generic sandbox image — it could edit files and push code, but it couldn't run tests or install dependencies. This weekend I fixed that, and also replaced the upstream DevPod binary with a maintained fork.
+Two weeks ago I wrote about [self-hosting OpenSWE on AWS with DevPod sandboxes](/2026/03/22/openswe-aws-devpod.html). That setup worked, but the agent was running in a generic sandbox image — it could edit files and push code, but it couldn't run tests or install dependencies. This weekend I fixed that, and also replaced the upstream DevPod project with a maintained fork.
 
 ## From Generic Image to Devcontainer
 
@@ -21,7 +21,7 @@ The `rails-otel-demo` repo already had a devcontainer from earlier work. Both re
 
 ### Multi-Repo Devcontainer
 
-The more interesting case is a workspace that contains *both* repos. In production, these two apps talk to each other — a setup the agent would eventually need to understand.
+The more interesting case is a workspace that contains *both* repos. In production, these two apps might talk to each other — a setup the agent would eventually need to understand.
 
 I created a third repo, `multi-repo-dev-containers`, with a Dockerfile and `devcontainer.json` that sets up an environment with Ruby, Python, PostgreSQL, and both repos cloned and configured. The `postCreateCommand` clones each repo, runs `bundle install` / `pip install`, creates databases, and runs migrations.
 
@@ -65,19 +65,17 @@ I've opened an issue in the forked repo — the init step should handle containe
 
 ## Workspace Naming
 
-An unexpected detour. When I switched from `--source image:` to `--source git:`, the workspace name started mattering for a different reason: DevPod creates the repo directory at `/workspaces/{workspace-name}`. My first attempt used the LangGraph thread ID as the workspace name (for persistence across follow-up comments on the same issue), which created paths like `/workspaces/openswe-6a54794e-ce9a-4950-a883-c9323aa838fd`. The agent expected `/workspaces/rails-otel-demo`.
+DevPod has two names that matter: the **workspace name** (used for the CLI, SSH, and EC2 instance tagging) and the **directory name** inside the container (where the source repo is cloned). With `--source git:`, the directory is always `/workspaces/{source-repo-name}`, regardless of the workspace name.
 
-With `DEVPOD_SOURCE_REPO` (multi-repo mode), the workspace name goes back to thread-ID-based, because the source repo isn't the same as the webhook repo. The agent's `resolve_repo_dir()` correctly finds the repo subdirectory within `/workspaces/` regardless.
+The workspace name matters for persistence — reusing the same name reconnects to an existing EC2 instance instead of creating a new one. I use the LangGraph thread ID as the workspace name so follow-up comments on the same GitHub issue or Slack thread reuse the same sandbox.
 
-Without `DEVPOD_SOURCE_REPO` (single-repo mode), the workspace name uses the repo name so the paths line up.
+In single-repo mode (no `DEVPOD_SOURCE_REPO`), the workspace name uses the repo name directly. This is simpler and means the workspace name and directory name happen to match. In multi-repo mode, the workspace name is thread-ID-based (e.g., `openswe-7f09ccbb-...`) while the directory is `/workspaces/multi-repo-dev-containers`. The agent's `resolve_repo_dir()` uses the directory name, not the workspace name, so it finds the right path either way.
 
 ## Port Forwarding
 
 The devcontainer configs include `forwardPorts` (port 3000 for Rails, etc.). When DevPod SSH'd into the workspace, it tried to forward these ports back to the Fargate host, which failed and crashed the SSH session with `"use of closed network connection"`. The fix was adding `--start-services=false` to all `devpod ssh` calls.
 
 ## The Test Runs
-
-The weekend's git log tells the story — 24 test issues across two repos, each one triggering a build-push-deploy-test cycle.
 
 Saturday was the DevPod fork migration and Aegra 0.9.0 upgrade. Issues #98–#105 on `rails-otel-demo`, with the working deployment confirmed at #105 (PR #106).
 
@@ -88,13 +86,13 @@ Sunday was devcontainers and the pre-built sandbox image. Issues #107–#121 on 
 - **#120** (PR #121): Multi-repo devcontainer working for `rails-otel-demo`
 - **Django #4** (PR #5): Multi-repo devcontainer working for `django-polls-playwright-demo`
 
-Both repos now work with the same multi-repo devcontainer and the same prebuilt image.
+Both repos now work with the same multi-repo devcontainer and the same prebuilt image.  When asked to write a test, the agent can run it to make sure it works -- even a Python Playwright UI test, because all the dependencies are installed.
+
+<a data-flickr-embed="true" href="https://www.flickr.com/photos/wsmoak/55190349515/in/dateposted-public/" title="openswe-python-playwright-devcontainer-20260405"><img src="https://live.staticflickr.com/65535/55190349515_30c9e41ab5_z.jpg" width="640" height="409" alt="openswe-python-playwright-devcontainer-20260405"/></a><script async src="//embedr.flickr.com/assets/client-code.js" charset="utf-8"></script>
 
 ## Current State
 
 The agent now gets a fully configured development environment for every run. When triggered from either repo, it spins up a workspace with both projects, their dependencies, and a running PostgreSQL instance. The prebuild image means the workspace is ready in about two minutes instead of eight.
-
-The multi-repo workspace also sets the stage for a future capability: having the agent modify both repos in a single run and open PRs in each. The plumbing isn't there yet — `commit_and_open_pr` is hardcoded to the webhook repo — but the workspace supports it.
 
 ## Links
 
