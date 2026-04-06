@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Open SWE with Multi-Repo Devcontainers in DevPod"
-date: 2026-04-05 20:00:00 -0400
+date: 2026-04-05T19:00:00-04:00
 tags: openswe langgraph aws terraform devpod ecs fargate ai agent devcontainer
 ---
 
