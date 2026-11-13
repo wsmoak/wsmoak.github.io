@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "A Fitness Protocol for Claude Code"
-date: 2026-11-12T20:30:00-05:00
+date: 2026-11-12T12:00:00-05:00
 tags: claude-code mod plugin hooks fitbit google-health ready-player-one terminal
 ---
 
