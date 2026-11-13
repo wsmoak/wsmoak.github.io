@@ -13,6 +13,8 @@ I wanted the same thing for Claude Code: no prompts until today's workout shows 
 
 So I built a mod that does that. Like Wade's, it's voluntary (it's off until you opt in). Unlike Wade's, there's no two-month lock: anyone at the keyboard can turn it off, so it adds friction rather than enforcement. But friction is the point.
 
+<a data-flickr-embed="true" href="https://www.flickr.com/photos/wsmoak/55650526511/in/dateposted-public/" title="261113_85830-fitness-hook-message-closeup"><img src="https://live.staticflickr.com/65535/55650526511_792578f894_c.jpg" width="800" height="154" alt="261113_85830-fitness-hook-message-closeup"/></a><script async src="//embedr.flickr.com/assets/client-code.js" charset="utf-8"></script>
+
 ## Mods are plugins
 
 A Claude Code *mod* is delivered as a regular plugin. What makes it a mod is the hooks module: instead of shell scripts, `hooks/hooks.json` points at a TypeScript file that registers handlers on events like `session.start`, `prompt.submit`, and `command.run`.
